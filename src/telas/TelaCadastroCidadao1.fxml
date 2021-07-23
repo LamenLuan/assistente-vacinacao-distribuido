@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCadastroCidadao1Controller">
+   <children>
+      <StackPane prefHeight="18.0" prefWidth="600.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onVoltar" prefHeight="31.0" prefWidth="0.0" StackPane.alignment="CENTER_LEFT">
+               <StackPane.margin>
+                  <Insets left="32.0" />
+               </StackPane.margin>
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@../midias/outline_arrow_back_black_24dp.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Label text="Ficha de Cadastro - Parte 1 de 2">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+         <VBox.margin>
+            <Insets bottom="32.0" />
+         </VBox.margin>
+      </StackPane>
+      <TextField fx:id="nomeField" maxWidth="200.0" promptText="Nome Completo">
+         <VBox.margin>
+            <Insets bottom="16.0" />
+         </VBox.margin>
+      </TextField>
+      <TextField fx:id="cpfField" maxWidth="200.0" promptText="CPF">
+         <VBox.margin>
+            <Insets bottom="16.0" />
+         </VBox.margin>
+      </TextField>
+      <DatePicker fx:id="dataField" maxWidth="200.0" promptText="Data de nascimento">
+         <VBox.margin>
+            <Insets bottom="16.0" />
+         </VBox.margin>
+      </DatePicker>
+      <Label maxWidth="200.0" text="Gênero:">
+         <VBox.margin>
+            <Insets bottom="8.0" />
+         </VBox.margin>
+      </Label>
+      <HBox maxWidth="200.0" prefHeight="25.6" prefWidth="600.0">
+         <children>
+            <RadioButton mnemonicParsing="false" text="Masculino">
+               <HBox.margin>
+                  <Insets right="16.0" />
+               </HBox.margin>
+               <toggleGroup>
+                  <ToggleGroup fx:id="genero" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton mnemonicParsing="false" text="Feminino" toggleGroup="$genero" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="8.0" />
+         </VBox.margin>
+      </HBox>
+      <Label maxWidth="200.0" text="Comorbidade?">
+         <VBox.margin>
+            <Insets bottom="8.0" />
+         </VBox.margin>
+      </Label>
+      <HBox layoutX="10.0" layoutY="87.0" maxWidth="200.0" prefHeight="25.6" prefWidth="200.0">
+         <children>
+            <RadioButton mnemonicParsing="false" text="Sim">
+               <HBox.margin>
+                  <Insets right="16.0" />
+               </HBox.margin>
+               <toggleGroup>
+                  <ToggleGroup fx:id="comorbidade" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton mnemonicParsing="false" selected="true" text="Não" toggleGroup="$comorbidade" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="28.0" />
+         </VBox.margin>
+      </HBox>
+      <Button maxWidth="200.0" mnemonicParsing="false" onAction="#onProsseguirCadastro" text="Prosseguir" />
+   </children>
+</VBox>

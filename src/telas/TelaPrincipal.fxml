@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaPrincipalController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Chat">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onAcessarChat" text="Acessar" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <StackPane prefHeight="18.0" prefWidth="600.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onVoltar" prefHeight="31.0" prefWidth="0.0" StackPane.alignment="CENTER_RIGHT">
+                     <StackPane.margin>
+                        <Insets right="32.0" />
+                     </StackPane.margin>
+                     <graphic>
+                        <ImageView fitHeight="23.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                           <image>
+                              <Image url="@../midias/outline_logout_black_24dp.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Label fx:id="lbUsuario" text="Bem vindo Usuário!">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="32.0" />
+               </VBox.margin>
+            </StackPane>
+            <Label fx:id="lbAgendamento" text="Agendamento marcado:">
+               <VBox.margin>
+                  <Insets bottom="16.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lbDadosAgendamento" text="Aplicação da 1ª dose&#10;&#10;Unidade de Saúde Sillas Salen&#10;&#10;Rua Rodrigo Silva - Uvaranas - Vila Claudionora, Ponta Grossa - PR, 84030-040&#10;&#10;Dia 30/08/2021 - 16:00" textAlignment="CENTER">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button maxWidth="150.0" mnemonicParsing="false" onAction="#onCancelarAgendamento" text="Cancelar Agendamento">
+                     <HBox.margin>
+                        <Insets right="48.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#onAgendar" prefWidth="150.0" text="Agendar" />
+               </children>
+            </HBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </VBox>
+   </center>
+</BorderPane>
