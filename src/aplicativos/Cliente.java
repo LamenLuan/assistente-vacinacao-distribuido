@@ -11,7 +11,7 @@ import javafx.stage.Stage;
  *
  * @author luanl
  */
-public class TelaFX extends Application {
+public class Cliente extends Application {
     
     Scene scene;
     

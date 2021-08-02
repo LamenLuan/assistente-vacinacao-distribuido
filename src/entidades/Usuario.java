@@ -11,11 +11,12 @@ package entidades;
  */
 public class Usuario {
     private String nome, cpf, dataNascimento, telefone, email, senha;
-    private boolean masculino, comorbidade;
+    private boolean masculino, comorbidade, admin;
 
     public Usuario(
         String nome, String cpf, String dataNascimento, String telefone,
-        String email, String senha, boolean masculino, boolean comorbidade
+        String email, String senha, boolean masculino, boolean comorbidade,
+        boolean admin
     ) {
         this.nome = nome;
         this.cpf = cpf;
@@ -25,6 +26,7 @@ public class Usuario {
         this.senha = senha;
         this.masculino = masculino;
         this.comorbidade = comorbidade;
+        this.admin = admin;
     }
 
     public String getNome() {
@@ -90,5 +92,12 @@ public class Usuario {
     public void setComorbidade(boolean comorbidade) {
         this.comorbidade = comorbidade;
     }
-    
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
 }

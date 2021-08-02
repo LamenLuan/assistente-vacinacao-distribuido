@@ -6,6 +6,7 @@
 package controles;
 
 import entidades.TelaLoader;
+import entidades.Usuario;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -21,6 +22,8 @@ import javafx.scene.layout.BorderPane;
  */
 public class TelaPrincipalController implements Initializable {
 
+    private Usuario usuario;
+    
     @FXML
     private Label lbUsuario;
     @FXML
@@ -29,6 +32,12 @@ public class TelaPrincipalController implements Initializable {
     private Label lbDadosAgendamento;
     @FXML
     private BorderPane root;
+
+    public void inicializaDados(Usuario usuario) {
+        this.usuario = usuario;
+        
+        lbUsuario.setText("Bem vindo " + usuario.getNome() + "!");
+    }
 
     /**
      * Initializes the controller class.

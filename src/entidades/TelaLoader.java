@@ -17,17 +17,23 @@ import javafx.stage.Stage;
  * @author luanl
  */
 public class TelaLoader {
-    public static void Load(Object obj, Pane root, String path, String title) {
+    public static FXMLLoader Load(Object obj, Pane root, String path, String title) {
         Parent parent;
         try {
-            parent = FXMLLoader.load( obj.getClass().getResource(path) );
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                obj.getClass().getResource(path)
+            );
+            parent = fxmlLoader.load();
             Stage stage = (Stage) root.getScene().getWindow();
             stage.setTitle(title);
             stage.setScene( new Scene(parent) );
+            
+            return fxmlLoader;
         } catch (IOException | NullPointerException ex) {
             Alerta.mostraAlerta(
                 "Erro no carregamento", "A página não pode ser carregada"
             );
         }
+        return null;
     }
 }
