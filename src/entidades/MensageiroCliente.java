@@ -35,7 +35,6 @@ public class MensageiroCliente {
             client.getInputStream()
         );
         String string = inbound.readUTF();
-        inbound.close();
         
         return string;
     }
