@@ -25,7 +25,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -76,7 +75,7 @@ public class TelaLoginController implements Initializable {
         FXMLLoader loader = TelaLoader.Load(
                 this, root, "/./telas/TelaPrincipal.fxml" ,
                 "Assistente de Vacinação - Menu Principal"
-            );
+        );
         
         TelaPrincipalController controller = loader.getController();
         controller.inicializaDados(admin, agendamento);
