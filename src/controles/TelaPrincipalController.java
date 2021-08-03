@@ -5,6 +5,7 @@
  */
 package controles;
 
+import entidades.Agendamento;
 import entidades.TelaLoader;
 import entidades.Usuario;
 import java.net.URL;
@@ -12,6 +13,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
@@ -22,21 +24,38 @@ import javafx.scene.layout.BorderPane;
  */
 public class TelaPrincipalController implements Initializable {
 
-    private Usuario usuario;
+    private boolean admin;
+    private Agendamento agendamento;
     
-    @FXML
-    private Label lbUsuario;
     @FXML
     private Label lbAgendamento;
     @FXML
-    private Label lbDadosAgendamento;
-    @FXML
     private BorderPane root;
+    @FXML
+    private Label lbDose;
+    @FXML
+    private Label lbLocal;
+    @FXML
+    private Label lbData;
+    @FXML
+    private Button btCancelarAgendamento;
 
-    public void inicializaDados(Usuario usuario) {
-        this.usuario = usuario;
+    public void inicializaDados(boolean admin, Agendamento agendamento) {
+        this.admin = admin;
+        this.agendamento = agendamento;
         
-        lbUsuario.setText("Bem vindo " + usuario.getNome() + "!");
+        if(agendamento != null) {
+            lbAgendamento.setText("Agendamento marcado:");
+            lbDose.setText(
+                "Aplicação da " + (agendamento.isSegundaDose() ? "2" : "1")
+                + "ª dose"
+            );
+            lbLocal.setText( agendamento.getLocal() );
+            lbData.setText(
+                agendamento.getData() + " - " + agendamento.getHora()
+            );
+            btCancelarAgendamento.setDisable(false);
+        }
     }
 
     /**

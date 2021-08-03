@@ -43,7 +43,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Label fx:id="lbUsuario" text="Bem vindo Usuário!">
+                  <Label text="Bem vindo Usuário!">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -56,7 +56,7 @@
                   <Insets bottom="32.0" />
                </VBox.margin>
             </StackPane>
-            <Label fx:id="lbAgendamento" text="Agendamento marcado:">
+            <Label fx:id="lbAgendamento" text="Nenhum agendamento marcado">
                <VBox.margin>
                   <Insets bottom="16.0" />
                </VBox.margin>
@@ -64,14 +64,30 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="lbDadosAgendamento" text="Aplicação da 1ª dose&#10;&#10;Unidade de Saúde Sillas Salen&#10;&#10;Rua Rodrigo Silva - Uvaranas - Vila Claudionora, Ponta Grossa - PR, 84030-040&#10;&#10;Dia 30/08/2021 - 16:00" textAlignment="CENTER">
+            <Label fx:id="lbDose" textAlignment="CENTER">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="lbLocal" textAlignment="CENTER">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="lbData" textAlignment="CENTER">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button maxWidth="150.0" mnemonicParsing="false" onAction="#onCancelarAgendamento" text="Cancelar Agendamento">
+                  <Button fx:id="btCancelarAgendamento" disable="true" maxWidth="150.0" mnemonicParsing="false" onAction="#onCancelarAgendamento" text="Cancelar Agendamento">
                      <HBox.margin>
                         <Insets right="48.0" />
                      </HBox.margin>

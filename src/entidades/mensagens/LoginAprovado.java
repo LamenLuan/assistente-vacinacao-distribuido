@@ -6,6 +6,7 @@
 package entidades.mensagens;
 
 import entidades.TipoMensagem;
+import entidades.Usuario;
 
 /**
  *
@@ -14,10 +15,10 @@ import entidades.TipoMensagem;
 public class LoginAprovado extends Mensagem {
     private boolean agendamento, admin;
 
-    public LoginAprovado(boolean agendamento, boolean admin) {
+    public LoginAprovado(Usuario usuario) {
         super( TipoMensagem.LOGIN_APROVADO.getId() );
-        this.agendamento = agendamento;
-        this.admin = admin;
+        this.agendamento = false;
+        this.admin = usuario.isAdmin();
     }
 
     public boolean isAgendamento() {

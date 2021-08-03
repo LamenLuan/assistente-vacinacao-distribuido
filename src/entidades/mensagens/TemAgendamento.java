@@ -5,34 +5,26 @@
  */
 package entidades.mensagens;
 
+import entidades.Agendamento;
 import entidades.TipoMensagem;
 
 /**
  *
  * @author luanl
  */
-public class PedidoLogin extends Mensagem {
-    private String cpf, senha;
+public class TemAgendamento extends Mensagem {
+    Agendamento agendamento;
 
-    public PedidoLogin(String cpf, String senha) {
-        super( TipoMensagem.PEDIDO_LOGIN.getId() );
-        this.cpf = cpf;
-        this.senha = senha;
+    public TemAgendamento(Agendamento agendamento) {
+        super( TipoMensagem.TEM_AGENDAMENTO.getId() );
+        this.agendamento = agendamento;
     }
 
-    public String getCpf() {
-        return cpf;
+    public Agendamento getAgendamento() {
+        return agendamento;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setAgendamento(Agendamento agendamento) {
+        this.agendamento = agendamento;
     }
 }

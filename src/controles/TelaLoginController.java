@@ -6,20 +6,19 @@
 package controles;
 
 import com.google.gson.Gson;
+import entidades.Agendamento;
 import entidades.Alerta;
 import entidades.MensageiroCliente;
 import entidades.TelaLoader;
-import entidades.Usuario;
-import entidades.mensagens.Mensagem;
+import entidades.TipoMensagem;
+import entidades.mensagens.LoginAprovado;
 import entidades.mensagens.PedidoLogin;
+import entidades.mensagens.TemAgendamento;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.event.ActionEvent;
@@ -72,12 +71,43 @@ public class TelaLoginController implements Initializable {
         return false;
     }
     
+    private void abreTelaPrincipal(boolean admin, Agendamento agendamento) {
+        FXMLLoader loader = TelaLoader.Load(
+                this, root, "/./telas/TelaPrincipal.fxml" ,
+                "Assistente de Vacinação - Menu Principal"
+            );
+        
+        TelaPrincipalController controller = loader.getController();
+        controller.inicializaDados(admin, agendamento);
+    }
+    
     private void verificaSeLoginAprovado(Socket client) throws IOException {
         Gson gson = new Gson();
         String string = MensageiroCliente.recebeMensagem(client);
         int id = MensageiroCliente.getIdMensagem(string);
         
-        System.out.println(id);
+        if( id == TipoMensagem.LOGIN_INVALIDO.getId() ) {
+            Alerta.mostraAlerta(
+                "Login inválido",
+                "CPF e/ou senha incorretos (ou inexistentes)"
+            );
+        }
+        else if( id == TipoMensagem.LOGIN_APROVADO.getId() ) {
+            TemAgendamento temAgendamento = null;
+            LoginAprovado loginAprovado = gson.fromJson(
+                string, LoginAprovado.class
+            );
+            
+            if( loginAprovado.isAgendamento() ) {
+                String str = MensageiroCliente.recebeMensagem(client);
+                temAgendamento = gson.fromJson(str, TemAgendamento.class);
+            }
+            
+            abreTelaPrincipal(
+                loginAprovado.isAdmin(),
+                temAgendamento != null ? temAgendamento.getAgendamento() : null
+            );
+        }
     }
 
     @FXML
@@ -100,13 +130,6 @@ public class TelaLoginController implements Initializable {
                     + "tente novamente mais tarde."
                 );
             }
-            
-//            FXMLLoader loader = TelaLoader.Load(
-//                this, root, "/./telas/TelaPrincipal.fxml" ,
-//                "Assistente de Vacinação - Menu Principal"
-//            );
-//            TelaPrincipalController controller = loader.getController();
-//            controller.inicializaDados(usuario);
         }
     }
 

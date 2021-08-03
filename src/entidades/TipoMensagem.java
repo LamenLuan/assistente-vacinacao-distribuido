@@ -12,7 +12,8 @@ package entidades;
 public enum TipoMensagem {
     PEDIDO_LOGIN(1),
     LOGIN_INVALIDO(2),
-    LOGIN_APROVADO(3);
+    LOGIN_APROVADO(3),
+    TEM_AGENDAMENTO(4);
     
     private final int id;
 

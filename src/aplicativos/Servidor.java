@@ -6,11 +6,13 @@
 package aplicativos;
 
 import com.google.gson.Gson;
+import entidades.Agendamento;
 import entidades.TipoMensagem;
 import entidades.Usuario;
 import entidades.mensagens.LoginAprovado;
 import entidades.mensagens.Mensagem;
 import entidades.mensagens.PedidoLogin;
+import entidades.mensagens.TemAgendamento;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -66,13 +68,13 @@ public class Servidor extends Thread {
         usuarios.add(
             new Usuario(
                 "Fulano", "11111111111", "01/01/2001", "1111111111",
-                "", "senha", true, true, false
+                "", "senha", true, true, false, null
             )
         );
         usuarios.add(
             new Usuario(
                 "Ciclano", "99999999999", "01/01/2001", "1111111111",
-                "", "senha", true, true, true
+                "", "senha", true, true, true, null
             )
         );
         
@@ -118,16 +120,18 @@ public class Servidor extends Thread {
         Usuario usuario = verificaLogin(pedido);
 
         if(usuario != null) {
-            mensagem = new LoginAprovado(
-                false, usuario.isAdmin()
-            );
+            mensagem = new LoginAprovado(usuario);
         }
         else {
-            mensagem = new Mensagem(
-                TipoMensagem.LOGIN_INVALIDO.getId()
-            );
+            mensagem = new Mensagem( TipoMensagem.LOGIN_INVALIDO.getId() );
         }    
-        
         outbound.writeUTF( gson.toJson(mensagem) );
+        
+        if(usuario != null) {
+            Agendamento agendamento = usuario.getAgendamento();
+            
+            if(agendamento != null) mensagem = new TemAgendamento(agendamento);
+            outbound.writeUTF( gson.toJson(mensagem) );
+        } 
     }
 }
