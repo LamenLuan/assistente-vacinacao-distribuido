@@ -15,7 +15,7 @@ public class PedidoLogin extends Mensagem {
     private String cpf, senha;
 
     public PedidoLogin(String cpf, String senha) {
-        super( TipoMensagem.PEDIDO_LOGIN.getId() );
+        super(TipoMensagem.PEDIDO_LOGIN);
         this.cpf = cpf;
         this.senha = senha;
     }

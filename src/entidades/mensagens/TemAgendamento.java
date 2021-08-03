@@ -16,7 +16,7 @@ public class TemAgendamento extends Mensagem {
     Agendamento agendamento;
 
     public TemAgendamento(Agendamento agendamento) {
-        super( TipoMensagem.TEM_AGENDAMENTO.getId() );
+        super(TipoMensagem.TEM_AGENDAMENTO);
         this.agendamento = agendamento;
     }
 

@@ -5,6 +5,8 @@
  */
 package entidades.mensagens;
 
+import entidades.TipoMensagem;
+
 /**
  *
  * @author luanl
@@ -13,8 +15,8 @@ public class Mensagem {
 
     protected int id;
 
-    public Mensagem(int id) {
-        this.id = id;
+    public Mensagem(TipoMensagem mensagem) {
+        this.id = mensagem.getId();
     }
 
     public int getId() {

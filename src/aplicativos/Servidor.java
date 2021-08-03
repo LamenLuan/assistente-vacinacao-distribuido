@@ -123,7 +123,7 @@ public class Servidor extends Thread {
             mensagem = new LoginAprovado(usuario);
         }
         else {
-            mensagem = new Mensagem( TipoMensagem.LOGIN_INVALIDO.getId() );
+            mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
         }    
         outbound.writeUTF( gson.toJson(mensagem) );
         
