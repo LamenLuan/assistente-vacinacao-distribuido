@@ -6,8 +6,13 @@
 package controles;
 
 import entidades.Agendamento;
+import entidades.MensageiroCliente;
 import entidades.TelaLoader;
-import entidades.Usuario;
+import entidades.TipoMensagem;
+import entidades.mensagens.Mensagem;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -88,6 +93,16 @@ public class TelaPrincipalController implements Initializable {
 
     @FXML
     private void onVoltar(ActionEvent event) {
+        Mensagem mensagem = new Mensagem(TipoMensagem.LOGOUT);
+        try {
+            Socket client = new Socket(
+                InetAddress.getByName("192.168.1.3"), 1234
+            );
+            MensageiroCliente.enviaMensagem(client, mensagem);
+            client.close();
+        } catch (IOException e) {
+            
+        }
         TelaLoader.Load(
             this, root, "/./telas/TelaLogin.fxml" ,
             "Assistente de Vacinação - Acesso ao sistema"

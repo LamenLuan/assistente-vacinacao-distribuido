@@ -13,7 +13,8 @@ public enum TipoMensagem {
     PEDIDO_LOGIN(1),
     LOGIN_INVALIDO(2),
     LOGIN_APROVADO(3),
-    TEM_AGENDAMENTO(4);
+    TEM_AGENDAMENTO(4),
+    LOGOUT(24);
     
     private final int id;
 

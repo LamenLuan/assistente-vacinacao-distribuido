@@ -46,12 +46,17 @@ public class Servidor extends Thread {
             outbound = new DataOutputStream( client.getOutputStream() );
             
             string = inbound.readUTF();
+            System.out.println("Servidor <- " + string);
+            
             mensagem = gson.fromJson(string, Mensagem.class);
             int idMensagem = mensagem.getId();
             
-            if( idMensagem == TipoMensagem.PEDIDO_LOGIN.getId() )
-                recebePedidoLogin(gson, string, outbound); 
-            
+            if( idMensagem == TipoMensagem.PEDIDO_LOGIN.getId() ) {
+                recebePedidoLogin(gson, string, outbound);
+            }   
+            else if( idMensagem == TipoMensagem.LOGOUT.getId() ) {
+                // TO DO
+            }
         } catch (IOException ex) {
             System.err.println("Erro: " + ex.getMessage() );
         }
@@ -112,6 +117,14 @@ public class Servidor extends Thread {
         return null;
     }
     
+    private void escreveMensagem(
+        Mensagem mensagem, Gson gson, DataOutputStream outbound
+    ) throws IOException {
+        String str = gson.toJson(mensagem);
+        outbound.writeUTF(str);
+        System.out.println("Servidor -> " + str);
+    }
+    
     private void recebePedidoLogin(
         Gson gson, String string, DataOutputStream outbound
     ) throws IOException {
@@ -119,19 +132,18 @@ public class Servidor extends Thread {
         PedidoLogin pedido = gson.fromJson(string, PedidoLogin.class);
         Usuario usuario = verificaLogin(pedido);
 
-        if(usuario != null) {
-            mensagem = new LoginAprovado(usuario);
-        }
-        else {
-            mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
-        }    
-        outbound.writeUTF( gson.toJson(mensagem) );
+        if(usuario != null) mensagem = new LoginAprovado(usuario);
+        else mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
+        
+        escreveMensagem(mensagem, gson, outbound);
         
         if(usuario != null) {
             Agendamento agendamento = usuario.getAgendamento();
             
-            if(agendamento != null) mensagem = new TemAgendamento(agendamento);
-            outbound.writeUTF( gson.toJson(mensagem) );
+            if(agendamento != null) {
+                mensagem = new TemAgendamento(agendamento);
+                escreveMensagem(mensagem, gson, outbound);
+            }
         } 
     }
 }
