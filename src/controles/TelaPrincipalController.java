@@ -64,7 +64,7 @@ public class TelaPrincipalController implements Initializable {
         }
         
         ( (Stage) root.getScene().getWindow() ).setOnCloseRequest(
-            eh -> onLogout(null)
+            eh -> MensageiroCliente.enviaLogout()
         );
     }
 
@@ -95,18 +95,14 @@ public class TelaPrincipalController implements Initializable {
         );
     }
 
+    private void cancelaEnventoDeSaida() {
+        ( (Stage) root.getScene().getWindow() ).setOnCloseRequest(null);
+    }
+    
     @FXML
     private void onLogout(ActionEvent event) {
-        Mensagem mensagem = new Mensagem(TipoMensagem.LOGOUT);
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName("192.168.1.3"), 1234
-            );
-            MensageiroCliente.enviaMensagem(client, mensagem);
-            client.close();
-        } catch (IOException e) {
-            
-        }
+        MensageiroCliente.enviaLogout();
+        cancelaEnventoDeSaida();
         TelaLoader.Load(
             this, root, "/./telas/TelaLogin.fxml" ,
             "Assistente de Vacinação - Acesso ao sistema"

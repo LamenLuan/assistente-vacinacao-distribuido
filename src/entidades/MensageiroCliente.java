@@ -10,6 +10,7 @@ import entidades.mensagens.Mensagem;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -44,5 +45,18 @@ public class MensageiroCliente {
         Mensagem mensagem = gson.fromJson(string, Mensagem.class);
         
         return mensagem.getId();
+    }
+    
+    public static void enviaLogout() {
+        Mensagem mensagem = new Mensagem(TipoMensagem.LOGOUT);
+        try {
+            Socket client = new Socket(
+                InetAddress.getByName("192.168.1.3"), 1234
+            );
+            MensageiroCliente.enviaMensagem(client, mensagem);
+            client.close();
+        } catch (IOException e) {
+            System.err.println("Erro no envio da mensagem de logout.");
+        }
     }
 }
