@@ -25,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -139,5 +140,12 @@ public class TelaLoginController implements Initializable {
             this, root, "/./telas/TelaCadastroCidadao1.fxml" ,
             "Assistente de Vacinação - Ficha de cadastro"
         );
+    }
+
+    @FXML
+    private void onInstaLogin(ActionEvent event) {
+        cpfField.setText("11111111111");
+        senhaField.setText("senha");
+        onEntrar(null);
     }
 }

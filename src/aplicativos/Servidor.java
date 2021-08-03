@@ -84,8 +84,7 @@ public class Servidor extends Thread {
         );
         
         try {
-            server = new ServerSocket(1234);     
-            System.out.println ("Conexao com socket criada.");
+            server = new ServerSocket(1234);
             try {
                 while (true) {
                     new Servidor( server.accept() ).start(); 
