@@ -21,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -61,6 +62,10 @@ public class TelaPrincipalController implements Initializable {
             );
             btCancelarAgendamento.setDisable(false);
         }
+        
+        ( (Stage) root.getScene().getWindow() ).setOnCloseRequest(
+            eh -> onLogout(null)
+        );
     }
 
     /**
@@ -68,7 +73,6 @@ public class TelaPrincipalController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     }    
 
     @FXML
@@ -92,7 +96,7 @@ public class TelaPrincipalController implements Initializable {
     }
 
     @FXML
-    private void onVoltar(ActionEvent event) {
+    private void onLogout(ActionEvent event) {
         Mensagem mensagem = new Mensagem(TipoMensagem.LOGOUT);
         try {
             Socket client = new Socket(
