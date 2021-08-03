@@ -31,7 +31,7 @@
          <children>
             <StackPane prefHeight="18.0" prefWidth="600.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#onVoltar" prefHeight="31.0" prefWidth="0.0" StackPane.alignment="CENTER_RIGHT">
+                  <Button mnemonicParsing="false" onAction="#onLogout" prefHeight="31.0" prefWidth="0.0" StackPane.alignment="CENTER_RIGHT">
                      <StackPane.margin>
                         <Insets right="32.0" />
                      </StackPane.margin>
