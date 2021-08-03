@@ -8,15 +8,11 @@ package controles;
 import entidades.Agendamento;
 import entidades.MensageiroCliente;
 import entidades.TelaLoader;
-import entidades.TipoMensagem;
-import entidades.mensagens.Mensagem;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -89,10 +85,13 @@ public class TelaPrincipalController implements Initializable {
 
     @FXML
     private void onAcessarChat(ActionEvent event) {
-        TelaLoader.Load(
+        FXMLLoader loader = TelaLoader.Load(
             this, root, "/./telas/TelaChat.fxml" ,
             "Assistente de Vacinação - Chat de Dúvidas"
         );
+        
+        TelaChatController controller = loader.getController();
+        controller.inicializaDados(admin, agendamento);
     }
 
     private void cancelaEnventoDeSaida() {
