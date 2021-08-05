@@ -30,6 +30,11 @@
                   </ImageView>
                </graphic>
             </Button>
+            <Button mnemonicParsing="false" onAction="#instaPreencher" StackPane.alignment="CENTER_RIGHT">
+               <StackPane.margin>
+                  <Insets right="32.0" />
+               </StackPane.margin>
+            </Button>
             <Label text="Ficha de Cadastro - Parte 1 de 2">
                <font>
                   <Font size="18.0" />
@@ -50,7 +55,7 @@
             <Insets bottom="16.0" />
          </VBox.margin>
       </TextField>
-      <DatePicker fx:id="dataField" maxWidth="200.0" promptText="Data de nascimento">
+      <DatePicker fx:id="dataField" editable="false" maxWidth="200.0" promptText="Data de nascimento">
          <VBox.margin>
             <Insets bottom="16.0" />
          </VBox.margin>
@@ -62,15 +67,15 @@
       </Label>
       <HBox maxWidth="200.0" prefHeight="25.6" prefWidth="600.0">
          <children>
-            <RadioButton mnemonicParsing="false" text="Masculino">
+            <RadioButton fx:id="rbMasculino" mnemonicParsing="false" text="Masculino">
                <HBox.margin>
                   <Insets right="16.0" />
                </HBox.margin>
                <toggleGroup>
-                  <ToggleGroup fx:id="genero" />
+                  <ToggleGroup fx:id="tgGenero" />
                </toggleGroup>
             </RadioButton>
-            <RadioButton mnemonicParsing="false" text="Feminino" toggleGroup="$genero" />
+            <RadioButton fx:id="rbFeminino" mnemonicParsing="false" text="Feminino" toggleGroup="$tgGenero" />
          </children>
          <VBox.margin>
             <Insets bottom="8.0" />
@@ -83,15 +88,15 @@
       </Label>
       <HBox layoutX="10.0" layoutY="87.0" maxWidth="200.0" prefHeight="25.6" prefWidth="200.0">
          <children>
-            <RadioButton mnemonicParsing="false" text="Sim">
+            <RadioButton fx:id="rbComorbidade" mnemonicParsing="false" text="Sim">
                <HBox.margin>
                   <Insets right="16.0" />
                </HBox.margin>
                <toggleGroup>
-                  <ToggleGroup fx:id="comorbidade" />
+                  <ToggleGroup fx:id="tgComorbidade" />
                </toggleGroup>
             </RadioButton>
-            <RadioButton mnemonicParsing="false" selected="true" text="Não" toggleGroup="$comorbidade" />
+            <RadioButton fx:id="rbNaoComorbidade" mnemonicParsing="false" selected="true" text="Não" toggleGroup="$tgComorbidade" />
          </children>
          <VBox.margin>
             <Insets bottom="28.0" />

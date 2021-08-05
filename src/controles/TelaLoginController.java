@@ -53,11 +53,8 @@ public class TelaLoginController implements Initializable {
     }
     
     private boolean verificaSeCamposValidos() {
-        Pattern padrao;
-        Matcher matcher;
-        
-        padrao = Pattern.compile("^[0-9]{11}$");
-        matcher = padrao.matcher(cpf);
+        Pattern padrao = Pattern.compile("^[0-9]{11}$");
+        Matcher matcher = padrao.matcher(cpf);
         
         if( cpf.isBlank() || senhaField.getText().isBlank() ) {
             Alerta.mostraAlerta(
