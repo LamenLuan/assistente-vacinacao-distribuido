@@ -40,6 +40,8 @@ public class TelaPrincipalController implements Initializable {
     private Label lbData;
     @FXML
     private Button btCancelarAgendamento;
+    @FXML
+    private Label lbBemVindo;
 
     public void inicializaDados(
         boolean admin, String cpf, String senha, Agendamento agendamento
@@ -48,6 +50,10 @@ public class TelaPrincipalController implements Initializable {
         this.cpf = cpf;
         this.senha = senha;
         this.agendamento = agendamento;
+        
+        lbBemVindo.setText(
+            "Bem vindo " + (admin ? "Administrador" : "Usuário") + '!'
+        );
         
         if(agendamento != null) {
             lbAgendamento.setText("Agendamento marcado:");

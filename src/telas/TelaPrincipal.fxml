@@ -43,7 +43,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Label text="Bem vindo Usuário!">
+                  <Label fx:id="lbBemVindo" text="Bem vindo Usuário!">
                      <font>
                         <Font size="14.0" />
                      </font>
