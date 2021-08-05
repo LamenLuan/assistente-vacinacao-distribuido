@@ -36,6 +36,8 @@ import javafx.scene.layout.VBox;
  */
 public class TelaLoginController implements Initializable {
 
+    String cpf, senha;
+    
     @FXML
     private TextField cpfField;
     @FXML
@@ -50,7 +52,7 @@ public class TelaLoginController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
     
-    private boolean verificaSeCamposValidos(String cpf, String senha) {
+    private boolean verificaSeCamposValidos() {
         Pattern padrao;
         Matcher matcher;
         
@@ -78,7 +80,7 @@ public class TelaLoginController implements Initializable {
         );
         
         TelaPrincipalController controller = loader.getController();
-        controller.inicializaDados(admin, agendamento);
+        controller.inicializaDados(admin, cpf, senha, agendamento);
     }
     
     private void verificaSeLoginAprovado(Socket client) throws IOException {
@@ -112,9 +114,10 @@ public class TelaLoginController implements Initializable {
 
     @FXML
     private void onEntrar(ActionEvent event) { 
-        String cpf = cpfField.getText(), senha = senhaField.getText();
+        cpf = cpfField.getText();
+        senha = senhaField.getText();
         
-        if( verificaSeCamposValidos(cpf, senha) ) {
+        if( verificaSeCamposValidos() ) {
             PedidoLogin pedidoLogin = new PedidoLogin(cpf, senha);
             try {
                 Socket client = new Socket(

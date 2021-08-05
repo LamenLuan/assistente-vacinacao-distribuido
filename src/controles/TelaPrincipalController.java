@@ -6,7 +6,6 @@
 package controles;
 
 import entidades.Agendamento;
-import entidades.MensageiroCliente;
 import entidades.TelaLoader;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,7 +16,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -27,6 +25,7 @@ import javafx.stage.Stage;
 public class TelaPrincipalController implements Initializable {
 
     private boolean admin;
+    private String cpf, senha;
     private Agendamento agendamento;
     
     @FXML
@@ -42,8 +41,12 @@ public class TelaPrincipalController implements Initializable {
     @FXML
     private Button btCancelarAgendamento;
 
-    public void inicializaDados(boolean admin, Agendamento agendamento) {
+    public void inicializaDados(
+        boolean admin, String cpf, String senha, Agendamento agendamento
+    ) {
         this.admin = admin;
+        this.cpf = cpf;
+        this.senha = senha;
         this.agendamento = agendamento;
         
         if(agendamento != null) {
@@ -58,10 +61,6 @@ public class TelaPrincipalController implements Initializable {
             );
             btCancelarAgendamento.setDisable(false);
         }
-        
-        ( (Stage) root.getScene().getWindow() ).setOnCloseRequest(
-            eh -> MensageiroCliente.enviaLogout()
-        );
     }
 
     /**
@@ -91,17 +90,11 @@ public class TelaPrincipalController implements Initializable {
         );
         
         TelaChatController controller = loader.getController();
-        controller.inicializaDados(admin, agendamento);
-    }
-
-    private void cancelaEnventoDeSaida() {
-        ( (Stage) root.getScene().getWindow() ).setOnCloseRequest(null);
+        controller.inicializaDados(admin, cpf, senha, agendamento);
     }
     
     @FXML
     private void onLogout(ActionEvent event) {
-        MensageiroCliente.enviaLogout();
-        cancelaEnventoDeSaida();
         TelaLoader.Load(
             this, root, "/./telas/TelaLogin.fxml" ,
             "Assistente de Vacinação - Acesso ao sistema"

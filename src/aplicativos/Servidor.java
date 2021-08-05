@@ -53,9 +53,6 @@ public class Servidor extends Thread {
             
             if( idMensagem == TipoMensagem.PEDIDO_LOGIN.getId() ) {
                 recebePedidoLogin(gson, string, outbound);
-            }   
-            else if( idMensagem == TipoMensagem.LOGOUT.getId() ) {
-                // TO DO
             }
         } catch (IOException ex) {
             System.err.println("Erro: " + ex.getMessage() );
