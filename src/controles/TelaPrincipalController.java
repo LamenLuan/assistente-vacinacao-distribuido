@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -42,6 +43,8 @@ public class TelaPrincipalController implements Initializable {
     private Button btCancelarAgendamento;
     @FXML
     private Label lbBemVindo;
+    @FXML
+    private Menu mCadastrar;
 
     public void inicializaDados(
         boolean admin, String cpf, String senha, Agendamento agendamento
@@ -67,6 +70,8 @@ public class TelaPrincipalController implements Initializable {
             );
             btCancelarAgendamento.setDisable(false);
         }
+        
+        if(admin) mCadastrar.setVisible(true);
     }
 
     /**
@@ -105,6 +110,16 @@ public class TelaPrincipalController implements Initializable {
             this, root, "/./telas/TelaLogin.fxml" ,
             "Assistente de Vacinação - Acesso ao sistema"
         );
+    }
+
+    @FXML
+    private void onCadastrarAdmin(ActionEvent event) {
+        FXMLLoader loader = TelaLoader.Load(
+            this, root, "/./telas/TelaCadastroCidadao1.fxml" ,
+            "Assistente de Vacinação - Ficha de cadastro (admin)"
+        );
+        TelaCadastroCidadao1Controller controller = loader.getController();
+        controller.modoAdmin();
     }
     
 }

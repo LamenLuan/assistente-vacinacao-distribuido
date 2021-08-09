@@ -23,6 +23,11 @@
               <MenuItem mnemonicParsing="false" onAction="#onAcessarChat" text="Acessar" />
             </items>
           </Menu>
+            <Menu fx:id="mCadastrar" mnemonicParsing="false" text="Cadastrar" visible="false">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onCadastrarAdmin" text="Administrador" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
    </top>

@@ -14,6 +14,8 @@ import entidades.TipoMensagem;
 import entidades.mensagens.LoginAprovado;
 import entidades.mensagens.PedidoLogin;
 import entidades.mensagens.TemAgendamento;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -80,9 +82,9 @@ public class TelaLoginController implements Initializable {
         controller.inicializaDados(admin, cpf, senha, agendamento);
     }
     
-    private void verificaSeLoginAprovado(Socket client) throws IOException {
+    private void verificaSeLoginAprovado(DataInputStream inbound) throws IOException {
         Gson gson = new Gson();
-        String string = MensageiroCliente.recebeMensagem(client);
+        String string = MensageiroCliente.recebeMensagem(inbound);
         int id = MensageiroCliente.getIdMensagem(string);
         
         if( id == TipoMensagem.LOGIN_INVALIDO.getId() ) {
@@ -98,7 +100,7 @@ public class TelaLoginController implements Initializable {
             );
             
             if( loginAprovado.isAgendamento() ) {
-                String str = MensageiroCliente.recebeMensagem(client);
+                String str = MensageiroCliente.recebeMensagem(inbound);
                 temAgendamento = gson.fromJson(str, TemAgendamento.class);
             }
             
@@ -118,12 +120,22 @@ public class TelaLoginController implements Initializable {
             PedidoLogin pedidoLogin = new PedidoLogin(cpf, senha);
             try {
                 Socket client = new Socket(
-                    InetAddress.getByName("192.168.1.3"), 1234
+                    InetAddress.getByName(MensageiroCliente.ip),
+                    MensageiroCliente.porta
                 );
-                MensageiroCliente.enviaMensagem(client, pedidoLogin);
-                verificaSeLoginAprovado(client);
-                client.close();
+                DataOutputStream outbound = new DataOutputStream(
+                    client.getOutputStream()
+                );
+                DataInputStream inbound = new DataInputStream(
+                    client.getInputStream()
+                );
+                
+                MensageiroCliente.enviaMensagem(outbound, pedidoLogin);
+                verificaSeLoginAprovado(inbound);
+                
+                MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
             } catch (IOException ex) {
+                System.err.println( "Erro:" + ex.getMessage() );
                 Alerta.mostraAlerta(
                     "Erro de comunicação",
                     "Aplicação foi incapaz de se comunicar com servidor, "

@@ -29,6 +29,8 @@ import javafx.scene.layout.VBox;
  */
 public class TelaCadastroCidadao1Controller implements Initializable {
 
+    boolean admin;
+    
     @FXML
     private TextField nomeField;
     @FXML
@@ -61,12 +63,17 @@ public class TelaCadastroCidadao1Controller implements Initializable {
         // Nao precisa de else aqui pois a comorbidade eh default false
         if( usuario.isComorbidade() ) rbComorbidade.setSelected(true);
     }
+    
+    public void modoAdmin() {
+        this.admin = true;
+    }
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        admin = false;
         rbMasculino.setUserData(true);
         rbFeminino.setUserData(false);
         rbComorbidade.setUserData(true);
@@ -116,7 +123,7 @@ public class TelaCadastroCidadao1Controller implements Initializable {
             
             Usuario usuario = new Usuario(
                 nome, cpf, dataNascimento, null, null, null,
-                masculino, comorbidade, false, null
+                masculino, comorbidade, this.admin, null
             );
             
             FXMLLoader loader = TelaLoader.Load(
