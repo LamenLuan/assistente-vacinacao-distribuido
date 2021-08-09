@@ -17,7 +17,7 @@ public class LoginAprovado extends Mensagem {
 
     public LoginAprovado(Usuario usuario) {
         super(TipoMensagem.LOGIN_APROVADO);
-        this.agendamento = false;
+        this.agendamento = (usuario.getAgendamento() != null);
         this.admin = usuario.isAdmin();
     }
 
