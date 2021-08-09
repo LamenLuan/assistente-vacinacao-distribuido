@@ -26,7 +26,7 @@ import javafx.scene.layout.VBox;
  *
  * @author luanl
  */
-public class TelaCadastroCidadao2Controller implements Initializable {
+public class TelaCadastroUsuario2Controller implements Initializable {
 
     Usuario usuario;
     
@@ -132,10 +132,10 @@ public class TelaCadastroCidadao2Controller implements Initializable {
     @FXML
     private void onVoltar(ActionEvent event) {
         FXMLLoader loader = TelaLoader.Load(
-            this, root, "/./telas/TelaCadastroCidadao1.fxml" ,
+            this, root, "/./telas/TelaCadastroUsuario1.fxml" ,
             "Assistente de Vacinação - Ficha de cadastro"
         );
-        TelaCadastroCidadao1Controller controller = loader.getController();
+        TelaCadastroUsuario1Controller controller = loader.getController();
         controller.inicializaDados(usuario);
     }
 

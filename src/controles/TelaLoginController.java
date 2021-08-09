@@ -148,7 +148,7 @@ public class TelaLoginController implements Initializable {
     @FXML
     private void onCadastrar(ActionEvent event) {
         TelaLoader.Load(
-            this, root, "/./telas/TelaCadastroCidadao1.fxml" ,
+            this, root, "/./telas/TelaCadastroUsuario1.fxml" ,
             "Assistente de Vacinação - Ficha de cadastro"
         );
     }

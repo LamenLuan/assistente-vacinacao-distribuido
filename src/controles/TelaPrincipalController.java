@@ -115,10 +115,10 @@ public class TelaPrincipalController implements Initializable {
     @FXML
     private void onCadastrarAdmin(ActionEvent event) {
         FXMLLoader loader = TelaLoader.Load(
-            this, root, "/./telas/TelaCadastroCidadao1.fxml" ,
+            this, root, "/./telas/TelaCadastroUsuario1.fxml" ,
             "Assistente de Vacinação - Ficha de cadastro (admin)"
         );
-        TelaCadastroCidadao1Controller controller = loader.getController();
+        TelaCadastroUsuario1Controller controller = loader.getController();
         controller.modoAdmin();
     }
     
