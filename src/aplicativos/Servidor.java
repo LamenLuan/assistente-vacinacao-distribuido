@@ -7,6 +7,7 @@ package aplicativos;
 
 import com.google.gson.Gson;
 import entidades.Agendamento;
+import entidades.MensageiroCliente;
 import entidades.TipoMensagem;
 import entidades.Usuario;
 import entidades.mensagens.LoginAprovado;
@@ -70,7 +71,9 @@ public class Servidor extends Thread {
         usuarios.add(
             new Usuario(
                 "Fulano", "11111111111", "01/01/2001", "1111111111",
-                "", "senha", true, true, false, null
+                "", "senha", true, true, false, new Agendamento(
+                    "Local", "Data", "Hora", "Astrazeneca", true
+                )
             )
         );
         usuarios.add(
@@ -81,7 +84,7 @@ public class Servidor extends Thread {
         );
         
         try {
-            server = new ServerSocket(1234);
+            server = new ServerSocket(MensageiroCliente.porta);
             try {
                 while (true) {
                     new Servidor( server.accept() ).start(); 
@@ -125,21 +128,21 @@ public class Servidor extends Thread {
         Gson gson, String string, DataOutputStream outbound
     ) throws IOException {
         Mensagem mensagem;
+        Agendamento agendamento = null;
         PedidoLogin pedido = gson.fromJson(string, PedidoLogin.class);
         Usuario usuario = verificaLogin(pedido);
 
-        if(usuario != null) mensagem = new LoginAprovado(usuario);
+        if(usuario != null) {
+           mensagem = new LoginAprovado(usuario);
+           agendamento = usuario.getAgendamento();
+        }
         else mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
         
         escreveMensagem(mensagem, gson, outbound);
         
-        if(usuario != null) {
-            Agendamento agendamento = usuario.getAgendamento();
-            
-            if(agendamento != null) {
-                mensagem = new TemAgendamento(agendamento);
-                escreveMensagem(mensagem, gson, outbound);
-            }
-        } 
+        if(agendamento == null) return;
+        
+        mensagem = new TemAgendamento(agendamento);
+        escreveMensagem(mensagem, gson, outbound);
     }
 }

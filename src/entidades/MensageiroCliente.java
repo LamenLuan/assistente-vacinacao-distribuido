@@ -18,22 +18,19 @@ import java.net.Socket;
  */
 public class MensageiroCliente {
     
+    public static int porta = 1234;
+    public static String ip = "192.168.1.3";
+    
     public static void enviaMensagem(
-        Socket client, Mensagem mensagem
+        DataOutputStream outbound, Mensagem mensagem
     ) throws IOException {
-        
-        DataOutputStream outbound = new DataOutputStream(
-            client.getOutputStream()
-        );
         Gson gson = new Gson();
-
         outbound.writeUTF( gson.toJson(mensagem) );
     }
     
-    public static String recebeMensagem(Socket client) throws IOException {
-        DataInputStream inbound = new DataInputStream(
-            client.getInputStream()
-        );
+    public static String recebeMensagem(
+        DataInputStream inbound
+    ) throws IOException {
         String string = inbound.readUTF();
         
         return string;
@@ -44,5 +41,13 @@ public class MensageiroCliente {
         Mensagem mensagem = gson.fromJson(string, Mensagem.class);
         
         return mensagem.getId();
+    }
+    
+    public static void fechaSocketEDutos(
+        Socket client, DataOutputStream outbound, DataInputStream inbound
+    ) throws IOException {
+        outbound.close();
+        inbound.close();
+        client.close();
     }
 }
