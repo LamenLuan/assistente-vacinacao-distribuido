@@ -7,7 +7,6 @@ package aplicativos;
 
 import com.google.gson.Gson;
 import entidades.Agendamento;
-import entidades.MensageiroCliente;
 import entidades.TipoMensagem;
 import entidades.Usuario;
 import entidades.mensagens.Erro;
@@ -22,12 +21,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Objects;
 /**
  *
  * @author luanl
  */
 public class Servidor extends Thread {
+    
+    private static int porta;
     protected Socket client;
     private static ArrayList<Usuario> usuarios;
 
@@ -92,7 +92,7 @@ public class Servidor extends Thread {
         );
         
         try {
-            server = new ServerSocket(MensageiroCliente.porta);
+            server = new ServerSocket(porta);
             try {
                 while (true) {
                     new Servidor( server.accept() ).start(); 
