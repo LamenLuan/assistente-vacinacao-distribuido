@@ -1,6 +1,8 @@
 package aplicativos;
 
+import entidades.MensageiroCliente;
 import java.io.IOException;
+import java.util.Scanner;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,6 +34,12 @@ public class Cliente extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("IP:");
+//        MensageiroCliente.ip = scanner.nextLine();
+//        System.out.println("Porta:");
+//        MensageiroCliente.porta = scanner.nextInt();
+        
         launch(args);
     }
 }

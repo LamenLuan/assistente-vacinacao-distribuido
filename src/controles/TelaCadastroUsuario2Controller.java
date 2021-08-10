@@ -9,7 +9,9 @@ import com.google.gson.Gson;
 import entidades.Alerta;
 import entidades.MensageiroCliente;
 import entidades.TelaLoader;
+import entidades.TipoMensagem;
 import entidades.Usuario;
+import entidades.mensagens.Erro;
 import entidades.mensagens.PedidoCadastro;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -116,6 +118,31 @@ public class TelaCadastroUsuario2Controller implements Initializable {
  
         return false;
     }
+    
+   private boolean verificaSeCadastroRealizado(DataInputStream inbound)
+        throws IOException  {
+       
+        Gson gson = new Gson();
+        String string = MensageiroCliente.recebeMensagem(inbound);
+        int id = MensageiroCliente.getIdMensagem(string);
+        
+        if( id == TipoMensagem.CPF_JA_CADASTRADO.getId() ) {
+            Alerta.mostraAlerta(
+                "CPF já cadastrado",
+                "Uma conta de usuário já foi cadastrada com esse CPF"
+            );
+        }
+        else if( id == TipoMensagem.ERRO.getId() ) {
+            Erro erro = gson.fromJson(string, Erro.class);
+            Alerta.mostraAlerta( "Erro com o servidor!", erro.getMensagem() );
+        }
+        else if( id == TipoMensagem.CADASTRO_EFETUADO.getId() ) {
+            Alerta.mostraConfirmacao("Cadastro efetuado com sucesso!");
+            return true;
+        }
+        
+        return false;
+   }
 
     @FXML
     private void onConcluirCadastro(ActionEvent event) {
@@ -138,16 +165,21 @@ public class TelaCadastroUsuario2Controller implements Initializable {
                 DataOutputStream outbound = new DataOutputStream(
                     client.getOutputStream()
                 );
+                DataInputStream inbound = new DataInputStream(
+                    client.getInputStream()
+                );
                 MensageiroCliente.enviaMensagem(outbound, pedidoCadastro);
+                
+                if( verificaSeCadastroRealizado(inbound) ) {
+                    TelaLoader.Load(
+                        this, root, "/./telas/TelaLogin.fxml" ,
+                        "Assistente de Vacinação - Acesso ao sistema"
+                    );
+                }
             } catch (IOException ex) {
                 System.err.println( "Erro:" + ex.getMessage() );
                 Alerta.mostrarErroComunicacao();
             }
-            
-            TelaLoader.Load(
-                this, root, "/./telas/TelaLogin.fxml" ,
-                "Assistente de Vacinação - Acesso ao sistema"
-            );
         }
     }
 
