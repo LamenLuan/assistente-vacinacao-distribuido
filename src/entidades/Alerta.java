@@ -30,4 +30,12 @@ public class Alerta {
     public static void mostrarCampoInvalido(String header) {
         mostraAlerta("Campo inválido!", header);
     }
+    
+    public static void mostrarErroComunicacao() {
+        Alerta.mostraAlerta(
+            "Erro de comunicação",
+            "Aplicação foi incapaz de se comunicar com servidor, "
+            + "tente novamente mais tarde."
+        );
+    }
 }

@@ -136,11 +136,7 @@ public class TelaLoginController implements Initializable {
                 MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
             } catch (IOException ex) {
                 System.err.println( "Erro:" + ex.getMessage() );
-                Alerta.mostraAlerta(
-                    "Erro de comunicação",
-                    "Aplicação foi incapaz de se comunicar com servidor, "
-                    + "tente novamente mais tarde."
-                );
+                Alerta.mostrarErroComunicacao();
             }
         }
     }

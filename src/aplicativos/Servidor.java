@@ -10,8 +10,10 @@ import entidades.Agendamento;
 import entidades.MensageiroCliente;
 import entidades.TipoMensagem;
 import entidades.Usuario;
+import entidades.mensagens.Erro;
 import entidades.mensagens.LoginAprovado;
 import entidades.mensagens.Mensagem;
+import entidades.mensagens.PedidoCadastro;
 import entidades.mensagens.PedidoLogin;
 import entidades.mensagens.TemAgendamento;
 import java.io.DataInputStream;
@@ -20,7 +22,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+import java.util.Objects;
 /**
  *
  * @author luanl
@@ -55,6 +57,12 @@ public class Servidor extends Thread {
             if( idMensagem == TipoMensagem.PEDIDO_LOGIN.getId() ) {
                 recebePedidoLogin(gson, string, outbound);
             }
+            else if( idMensagem == TipoMensagem.PEDIDO_CADASTRO.getId() ) {
+                recebePedidoCadastro(gson, string, outbound);
+            }
+            else escreveMensagem(
+                new Erro("Identificador de mensagem inválido"), gson, outbound
+            );
         } catch (IOException ex) {
             System.err.println("Erro: " + ex.getMessage() );
         }
@@ -106,14 +114,22 @@ public class Servidor extends Thread {
         }
     }
     
-    private synchronized Usuario verificaLogin(PedidoLogin pedido) {
+    private synchronized Usuario verificaCpf(String cpf) {
         for(Usuario usuario : usuarios) {
-            if( usuario.getCpf().equals( pedido.getCpf() ) ) {
-                if( usuario.getSenha().equals( pedido.getSenha() ) )
-                    return usuario;
-            }
-        }  
+            if( usuario.getCpf().equals(cpf) ) return usuario;
+        } 
         return null;
+    }
+    
+    private synchronized Usuario verificaLogin(PedidoLogin pedido) {
+        Usuario usuario = verificaCpf( pedido.getCpf() );
+        if(usuario != null)
+            if( usuario.getSenha().equals( pedido.getSenha() ) ) return usuario;
+        return null;
+    }
+    
+    private synchronized void saveUsuario(Usuario usuario) {
+        usuarios.add(usuario);
     }
     
     private void escreveMensagem(
@@ -130,19 +146,59 @@ public class Servidor extends Thread {
         Mensagem mensagem;
         Agendamento agendamento = null;
         PedidoLogin pedido = gson.fromJson(string, PedidoLogin.class);
-        Usuario usuario = verificaLogin(pedido);
+        
+        if(pedido.getCpf() != null && pedido.getSenha() != null) {
+            Usuario usuario = verificaLogin(pedido);
 
-        if(usuario != null) {
-           mensagem = new LoginAprovado(usuario);
-           agendamento = usuario.getAgendamento();
+            if(usuario != null) {
+               mensagem = new LoginAprovado(usuario);
+               agendamento = usuario.getAgendamento();
+            }
+            else mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
+
+            escreveMensagem(mensagem, gson, outbound);
+
+            if(agendamento == null) return;
+
+            mensagem = new TemAgendamento(agendamento);
         }
-        else mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
+        else mensagem = new Erro("Dados para login incompletos");
         
         escreveMensagem(mensagem, gson, outbound);
+    }
+    
+    private boolean isPedidoCadastroValido(Usuario usuario) {
+        if(usuario == null) return false;
+        return (
+            usuario.getNome() != null &&
+            usuario.getCpf() != null &&
+            usuario.getDataNascimento() != null &&
+            usuario.getTelefone() != null &&
+            usuario.getEmail() != null &&
+            usuario.getSenha() != null
+        );
+    }
+    
+    private void recebePedidoCadastro(
+        Gson gson, String string, DataOutputStream outbound
+    ) throws IOException {
+        Mensagem mensagem;
+        Usuario usuario;
+        PedidoCadastro pedidoCadastro = gson.fromJson(
+            string, PedidoCadastro.class
+        );
+        usuario = pedidoCadastro.getUsuario();
         
-        if(agendamento == null) return;
+        if ( isPedidoCadastroValido(usuario) ) {  
+            if (verificaCpf(usuario.getCpf()) == null) {
+                saveUsuario(usuario);
+                mensagem = new Mensagem(TipoMensagem.CADASTRO_EFETUADO);
+            } else {
+                mensagem = new Mensagem(TipoMensagem.CPF_JA_CADASTRADO);
+            }
+        }
+        else mensagem = new Erro("Dados para cadastro incompletos");
         
-        mensagem = new TemAgendamento(agendamento);
         escreveMensagem(mensagem, gson, outbound);
     }
 }

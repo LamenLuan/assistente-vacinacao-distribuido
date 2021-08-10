@@ -7,8 +7,15 @@ package controles;
 
 import com.google.gson.Gson;
 import entidades.Alerta;
+import entidades.MensageiroCliente;
 import entidades.TelaLoader;
 import entidades.Usuario;
+import entidades.mensagens.PedidoCadastro;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -121,6 +128,21 @@ public class TelaCadastroUsuario2Controller implements Initializable {
             usuario.setTelefone(telefone);
             usuario.setEmail(email);
             usuario.setSenha(senha);
+            PedidoCadastro pedidoCadastro = new PedidoCadastro(usuario);
+            
+            try {
+                Socket client = new Socket(
+                    InetAddress.getByName(MensageiroCliente.ip),
+                    MensageiroCliente.porta
+                );
+                DataOutputStream outbound = new DataOutputStream(
+                    client.getOutputStream()
+                );
+                MensageiroCliente.enviaMensagem(outbound, pedidoCadastro);
+            } catch (IOException ex) {
+                System.err.println( "Erro:" + ex.getMessage() );
+                Alerta.mostrarErroComunicacao();
+            }
             
             TelaLoader.Load(
                 this, root, "/./telas/TelaLogin.fxml" ,
