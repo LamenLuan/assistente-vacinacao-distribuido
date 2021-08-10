@@ -21,7 +21,7 @@ public class Alerta {
     }
     
     public static void mostraConfirmacao(String header) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Êxito!");
         alert.setHeaderText(header);
         alert.showAndWait();
