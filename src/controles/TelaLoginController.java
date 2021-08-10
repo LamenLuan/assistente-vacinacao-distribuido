@@ -155,4 +155,11 @@ public class TelaLoginController implements Initializable {
         senhaField.setText("senha");
         onEntrar(null);
     }
+
+    @FXML
+    private void onInstaLoginAdmin(ActionEvent event) {
+        cpfField.setText("99999999999");
+        senhaField.setText("senha");
+        onEntrar(null);
+    }
 }
