@@ -21,13 +21,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 /**
  *
  * @author luanl
  */
 public class Servidor extends Thread {
     
-    private static int porta;
+    private static int porta = 1234;
     protected Socket client;
     private static ArrayList<Usuario> usuarios;
 
@@ -74,6 +75,10 @@ public class Servidor extends Thread {
      */
     public static void main(String[] args) {
         ServerSocket server = null;
+     
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("Porta:");
+//        porta = scanner.nextInt();
         
         usuarios = new ArrayList<>();
         usuarios.add(
