@@ -25,14 +25,16 @@ public class MensageiroCliente {
         PrintWriter outbound, Mensagem mensagem
     ) throws IOException {
         Gson gson = new Gson();
-        outbound.println( gson.toJson(mensagem) );
+        String msg = gson.toJson(mensagem);
+        System.out.println("Cliente -> " + msg);
+        outbound.println(msg);
     }
     
     public static String recebeMensagem(
         BufferedReader inbound
     ) throws IOException {
         String string = inbound.readLine();
-        
+        System.out.println("Cliente <- " + string);
         return string;
     }
     
