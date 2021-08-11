@@ -14,9 +14,10 @@ import entidades.TipoMensagem;
 import entidades.mensagens.LoginAprovado;
 import entidades.mensagens.PedidoLogin;
 import entidades.mensagens.TemAgendamento;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -82,7 +83,7 @@ public class TelaLoginController implements Initializable {
         controller.inicializaDados(admin, cpf, senha, agendamento);
     }
     
-    private void verificaSeLoginAprovado(DataInputStream inbound) throws IOException {
+    private void verificaSeLoginAprovado(BufferedReader inbound) throws IOException {
         Gson gson = new Gson();
         String string = MensageiroCliente.recebeMensagem(inbound);
         int id = MensageiroCliente.getIdMensagem(string);
@@ -123,11 +124,11 @@ public class TelaLoginController implements Initializable {
                     InetAddress.getByName(MensageiroCliente.ip),
                     MensageiroCliente.porta
                 );
-                DataOutputStream outbound = new DataOutputStream(
-                    client.getOutputStream()
+                PrintWriter outbound = new PrintWriter(
+                    client.getOutputStream(), true
                 );
-                DataInputStream inbound = new DataInputStream(
-                    client.getInputStream()
+                BufferedReader inbound = new BufferedReader(
+                    new InputStreamReader( client.getInputStream() )
                 );
                 
                 MensageiroCliente.enviaMensagem(outbound, pedidoLogin);

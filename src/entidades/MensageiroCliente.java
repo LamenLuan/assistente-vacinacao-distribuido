@@ -7,8 +7,8 @@ package entidades;
 
 import com.google.gson.Gson;
 import entidades.mensagens.Mensagem;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -22,16 +22,16 @@ public class MensageiroCliente {
     public static String ip = "192.168.1.3";
     
     public static void enviaMensagem(
-        DataOutputStream outbound, Mensagem mensagem
+        PrintWriter outbound, Mensagem mensagem
     ) throws IOException {
         Gson gson = new Gson();
-        outbound.writeUTF( gson.toJson(mensagem) );
+        outbound.println( gson.toJson(mensagem) );
     }
     
     public static String recebeMensagem(
-        DataInputStream inbound
+        BufferedReader inbound
     ) throws IOException {
-        String string = inbound.readUTF();
+        String string = inbound.readLine();
         
         return string;
     }
@@ -44,7 +44,7 @@ public class MensageiroCliente {
     }
     
     public static void fechaSocketEDutos(
-        Socket client, DataOutputStream outbound, DataInputStream inbound
+        Socket client, PrintWriter outbound, BufferedReader inbound
     ) throws IOException {
         outbound.close();
         inbound.close();

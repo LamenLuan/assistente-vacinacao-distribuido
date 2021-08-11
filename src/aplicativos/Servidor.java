@@ -15,9 +15,10 @@ import entidades.mensagens.Mensagem;
 import entidades.mensagens.PedidoCadastro;
 import entidades.mensagens.PedidoLogin;
 import entidades.mensagens.TemAgendamento;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -38,18 +39,20 @@ public class Servidor extends Thread {
 
     @Override
     public void run() {
-       DataInputStream inbound;
-       DataOutputStream outbound;
+       BufferedReader inbound;
+       PrintWriter outbound;
        Gson gson = new Gson();
        
        String string;
        Mensagem mensagem;
        
         try {
-            inbound = new DataInputStream( client.getInputStream() );
-            outbound = new DataOutputStream( client.getOutputStream() );
+            inbound = new BufferedReader(
+                new InputStreamReader( client.getInputStream() )
+            );
+            outbound = new PrintWriter( client.getOutputStream(), true );
             
-            string = inbound.readUTF();
+            string = inbound.readLine();
             System.out.println("Servidor <- " + string);
             
             mensagem = gson.fromJson(string, Mensagem.class);
@@ -138,15 +141,15 @@ public class Servidor extends Thread {
     }
     
     private void escreveMensagem(
-        Mensagem mensagem, Gson gson, DataOutputStream outbound
+        Mensagem mensagem, Gson gson, PrintWriter outbound
     ) throws IOException {
         String str = gson.toJson(mensagem);
-        outbound.writeUTF(str);
+        outbound.println(str);
         System.out.println("Servidor -> " + str);
     }
     
     private void recebePedidoLogin(
-        Gson gson, String string, DataOutputStream outbound
+        Gson gson, String string, PrintWriter outbound
     ) throws IOException {
         Mensagem mensagem;
         Agendamento agendamento = null;
@@ -185,7 +188,7 @@ public class Servidor extends Thread {
     }
     
     private void recebePedidoCadastro(
-        Gson gson, String string, DataOutputStream outbound
+        Gson gson, String string, PrintWriter outbound
     ) throws IOException {
         Mensagem mensagem;
         Usuario usuario;

@@ -7,3 +7,4 @@ dist/
 nbdist/
 .nb-gradle/
 src/aplicativos/Teste.java
+README.txt
