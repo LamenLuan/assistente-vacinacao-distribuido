@@ -24,9 +24,9 @@ public class Mensagem {
         this.id = tipoMsg.getId();
     }
     
-    // Pedido de login
-    public Mensagem(String cpf, String senha) {
-        this.id = TipoMensagem.PEDIDO_LOGIN.getId();
+    // Pedido de login ou Pedido de dados para agendamento
+    public Mensagem(TipoMensagem tipoMensagem, String cpf, String senha) {
+        this.id = tipoMensagem.getId();
         this.cpf = cpf;
         this.senha = senha;
     }

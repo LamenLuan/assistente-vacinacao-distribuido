@@ -114,7 +114,9 @@ public class TelaLoginController implements Initializable {
         senha = senhaField.getText();
         
         if( verificaSeCamposValidos() ) {
-            Mensagem pedidoLogin = new Mensagem(cpf, senha);
+            Mensagem pedidoLogin = new Mensagem(
+                TipoMensagem.PEDIDO_LOGIN, cpf, senha
+            );
             try {
                 Socket client = new Socket(
                     InetAddress.getByName(MensageiroCliente.ip),
