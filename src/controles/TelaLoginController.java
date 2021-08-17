@@ -11,9 +11,7 @@ import entidades.Alerta;
 import entidades.MensageiroCliente;
 import entidades.TelaLoader;
 import entidades.TipoMensagem;
-import entidades.mensagens.LoginAprovado;
-import entidades.mensagens.PedidoLogin;
-import entidades.mensagens.TemAgendamento;
+import entidades.Mensagem;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -95,19 +93,17 @@ public class TelaLoginController implements Initializable {
             );
         }
         else if( id == TipoMensagem.LOGIN_APROVADO.getId() ) {
-            TemAgendamento temAgendamento = null;
-            LoginAprovado loginAprovado = gson.fromJson(
-                string, LoginAprovado.class
-            );
+            Mensagem temAgendamento = null;
+            Mensagem loginAprovado = gson.fromJson(string, Mensagem.class);
             
             if( loginAprovado.isAgendamento() ) {
                 String str = MensageiroCliente.recebeMensagem(inbound);
-                temAgendamento = gson.fromJson(str, TemAgendamento.class);
+                temAgendamento = gson.fromJson(str, Mensagem.class);
             }
             
             abreTelaPrincipal(
                 loginAprovado.isAdmin(),
-                temAgendamento != null ? temAgendamento.getAgendamento() : null
+                temAgendamento != null ? temAgendamento.getDadosAgendamento() : null
             );
         }
     }
@@ -118,7 +114,7 @@ public class TelaLoginController implements Initializable {
         senha = senhaField.getText();
         
         if( verificaSeCamposValidos() ) {
-            PedidoLogin pedidoLogin = new PedidoLogin(cpf, senha);
+            Mensagem pedidoLogin = new Mensagem(cpf, senha);
             try {
                 Socket client = new Socket(
                     InetAddress.getByName(MensageiroCliente.ip),

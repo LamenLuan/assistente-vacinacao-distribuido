@@ -9,12 +9,7 @@ import com.google.gson.Gson;
 import entidades.Agendamento;
 import entidades.TipoMensagem;
 import entidades.Usuario;
-import entidades.mensagens.Erro;
-import entidades.mensagens.LoginAprovado;
-import entidades.mensagens.Mensagem;
-import entidades.mensagens.PedidoCadastro;
-import entidades.mensagens.PedidoLogin;
-import entidades.mensagens.TemAgendamento;
+import entidades.Mensagem;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -65,7 +60,9 @@ public class Servidor extends Thread {
                 recebePedidoCadastro(gson, string, outbound);
             }
             else escreveMensagem(
-                new Erro("Identificador de mensagem inválido"), gson, outbound
+                new Mensagem(
+                    TipoMensagem.ERRO, "Identificador de mensagem inválido"
+                ), gson, outbound
             );
         } catch (IOException ex) {
             System.err.println("Erro: " + ex.getMessage() );
@@ -129,7 +126,7 @@ public class Servidor extends Thread {
         return null;
     }
     
-    private synchronized Usuario verificaLogin(PedidoLogin pedido) {
+    private synchronized Usuario verificaLogin(Mensagem pedido) {
         Usuario usuario = verificaCpf( pedido.getCpf() );
         if(usuario != null)
             if( usuario.getSenha().equals( pedido.getSenha() ) ) return usuario;
@@ -151,16 +148,17 @@ public class Servidor extends Thread {
     private void recebePedidoLogin(
         Gson gson, String string, PrintWriter outbound
     ) throws IOException {
-        Mensagem mensagem;
         Agendamento agendamento = null;
-        PedidoLogin pedido = gson.fromJson(string, PedidoLogin.class);
+        Mensagem mensagem = gson.fromJson(string, Mensagem.class);
         
-        if(pedido.getCpf() != null && pedido.getSenha() != null) {
-            Usuario usuario = verificaLogin(pedido);
+        if(mensagem.getCpf() != null && mensagem.getSenha() != null) {
+            Usuario usuario = verificaLogin(mensagem);
 
             if(usuario != null) {
-               mensagem = new LoginAprovado(usuario);
                agendamento = usuario.getAgendamento();
+               mensagem = new Mensagem(
+                    agendamento != null, usuario.isAdmin()
+               );
             }
             else mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
 
@@ -168,9 +166,11 @@ public class Servidor extends Thread {
 
             if(agendamento == null) return;
 
-            mensagem = new TemAgendamento(agendamento);
+            mensagem = new Mensagem(agendamento);
         }
-        else mensagem = new Erro("Dados para login incompletos");
+        else mensagem = new Mensagem(
+            TipoMensagem.ERRO, "Dados para login incompletos"
+        );
         
         escreveMensagem(mensagem, gson, outbound);
     }
@@ -190,12 +190,11 @@ public class Servidor extends Thread {
     private void recebePedidoCadastro(
         Gson gson, String string, PrintWriter outbound
     ) throws IOException {
-        Mensagem mensagem;
         Usuario usuario;
-        PedidoCadastro pedidoCadastro = gson.fromJson(
-            string, PedidoCadastro.class
+        Mensagem mensagem = gson.fromJson(
+            string, Mensagem.class
         );
-        usuario = pedidoCadastro.getUsuario();
+        usuario = mensagem.getUsuario();
         
         if ( isPedidoCadastroValido(usuario) ) {  
             if (verificaCpf(usuario.getCpf()) == null) {
@@ -205,7 +204,9 @@ public class Servidor extends Thread {
                 mensagem = new Mensagem(TipoMensagem.CPF_JA_CADASTRADO);
             }
         }
-        else mensagem = new Erro("Dados para cadastro incompletos");
+        else mensagem = new Mensagem(
+            TipoMensagem.ERRO, "Dados para cadastro incompletos"
+        );
         
         escreveMensagem(mensagem, gson, outbound);
     }

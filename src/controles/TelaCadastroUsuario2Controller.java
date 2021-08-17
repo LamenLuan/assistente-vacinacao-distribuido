@@ -11,8 +11,7 @@ import entidades.MensageiroCliente;
 import entidades.TelaLoader;
 import entidades.TipoMensagem;
 import entidades.Usuario;
-import entidades.mensagens.Erro;
-import entidades.mensagens.PedidoCadastro;
+import entidades.Mensagem;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -134,7 +133,7 @@ public class TelaCadastroUsuario2Controller implements Initializable {
             );
         }
         else if( id == TipoMensagem.ERRO.getId() ) {
-            Erro erro = gson.fromJson(string, Erro.class);
+            Mensagem erro = gson.fromJson(string, Mensagem.class);
             Alerta.mostraAlerta( "Erro com o servidor!", erro.getMensagem() );
         }
         else if( id == TipoMensagem.CADASTRO_EFETUADO.getId() ) {
@@ -156,7 +155,7 @@ public class TelaCadastroUsuario2Controller implements Initializable {
             usuario.setTelefone(telefone);
             usuario.setEmail(email);
             usuario.setSenha(senha);
-            PedidoCadastro pedidoCadastro = new PedidoCadastro(usuario);
+            Mensagem pedidoCadastro = new Mensagem(usuario);
             
             try {
                 Socket client = new Socket(

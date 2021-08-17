@@ -6,7 +6,6 @@
 package entidades;
 
 import com.google.gson.Gson;
-import entidades.mensagens.Mensagem;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
