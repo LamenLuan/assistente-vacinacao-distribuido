@@ -8,7 +8,7 @@ package controles;
 import com.google.gson.Gson;
 import entidades.Agendamento;
 import entidades.Alerta;
-import entidades.MensageiroCliente;
+import entidades.Mensageiro;
 import entidades.TelaLoader;
 import entidades.TipoMensagem;
 import entidades.Mensagem;
@@ -58,10 +58,7 @@ public class TelaLoginController implements Initializable {
         Matcher matcher = padrao.matcher(cpf);
         
         if( cpf.isBlank() || senhaField.getText().isBlank() ) {
-            Alerta.mostraAlerta(
-                "Campos vazios",
-                "Preencha os campos de CPF e senha para acessar"
-            );
+            Alerta.mostrarCamposVazios();
         }
         else if( !matcher.find() ) {
             Alerta.mostrarCampoInvalido("O CPF deve ter 11 dígitos!");
@@ -82,9 +79,8 @@ public class TelaLoginController implements Initializable {
     }
     
     private void verificaSeLoginAprovado(BufferedReader inbound) throws IOException {
-        Gson gson = new Gson();
-        String string = MensageiroCliente.recebeMensagem(inbound);
-        int id = MensageiroCliente.getIdMensagem(string);
+        Mensagem mensagem = Mensageiro.recebeMensagem(inbound, false);
+        int id = mensagem.getId();
         
         if( id == TipoMensagem.LOGIN_INVALIDO.getId() ) {
             Alerta.mostraAlerta(
@@ -94,16 +90,14 @@ public class TelaLoginController implements Initializable {
         }
         else if( id == TipoMensagem.LOGIN_APROVADO.getId() ) {
             Mensagem temAgendamento = null;
-            Mensagem loginAprovado = gson.fromJson(string, Mensagem.class);
             
-            if( loginAprovado.isAgendamento() ) {
-                String str = MensageiroCliente.recebeMensagem(inbound);
-                temAgendamento = gson.fromJson(str, Mensagem.class);
-            }
+            if( mensagem.isAgendamento() ) 
+                temAgendamento = Mensageiro.recebeMensagem(inbound, false);
             
             abreTelaPrincipal(
-                loginAprovado.isAdmin(),
-                temAgendamento != null ? temAgendamento.getDadosAgendamento() : null
+                mensagem.isAdmin(),
+                temAgendamento != null
+                        ? temAgendamento.getDadosAgendamento() : null
             );
         }
     }
@@ -119,8 +113,8 @@ public class TelaLoginController implements Initializable {
             );
             try {
                 Socket client = new Socket(
-                    InetAddress.getByName(MensageiroCliente.ip),
-                    MensageiroCliente.porta
+                    InetAddress.getByName(Mensageiro.ip),
+                    Mensageiro.porta
                 );
                 PrintWriter outbound = new PrintWriter(
                     client.getOutputStream(), true
@@ -129,10 +123,10 @@ public class TelaLoginController implements Initializable {
                     new InputStreamReader( client.getInputStream() )
                 );
                 
-                MensageiroCliente.enviaMensagem(outbound, pedidoLogin);
+                Mensageiro.enviaMensagem(outbound, pedidoLogin, false);
                 verificaSeLoginAprovado(inbound);
                 
-                MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
+                Mensageiro.fechaSocketEDutos(client, outbound, inbound);
             } catch (IOException ex) {
                 System.err.println( "Erro:" + ex.getMessage() );
                 Alerta.mostrarErroComunicacao();

@@ -38,4 +38,11 @@ public class Alerta {
             + "tente novamente mais tarde."
         );
     }
+    
+    public static void mostrarCamposVazios() {
+        Alerta.mostraAlerta(
+            "Campos vazios",
+            "Preencha todos os campos para avançar"
+        );
+    }
 }

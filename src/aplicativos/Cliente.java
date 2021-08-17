@@ -1,6 +1,6 @@
 package aplicativos;
 
-import entidades.MensageiroCliente;
+import entidades.Mensageiro;
 import java.io.IOException;
 import java.util.Scanner;
 import javafx.application.Application;

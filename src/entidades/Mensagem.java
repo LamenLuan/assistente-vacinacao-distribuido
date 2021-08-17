@@ -5,10 +5,6 @@
  */
 package entidades;
 
-import entidades.Agendamento;
-import entidades.TipoMensagem;
-import entidades.Usuario;
-
 /**
  *
  * @author luanl

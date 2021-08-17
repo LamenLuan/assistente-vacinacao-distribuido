@@ -7,7 +7,7 @@ package controles;
 
 import com.google.gson.Gson;
 import entidades.Alerta;
-import entidades.MensageiroCliente;
+import entidades.Mensageiro;
 import entidades.TelaLoader;
 import entidades.TipoMensagem;
 import entidades.Usuario;
@@ -106,10 +106,7 @@ public class TelaCadastroUsuario2Controller implements Initializable {
         String telefone, String email, String senha, String confirmaSenha
     ) {
         if( telefone.isBlank() || senha.isBlank() || confirmaSenha.isBlank() ) {
-            Alerta.mostraAlerta(
-                "Campos vazios",
-                "Preencha todos os campos para concluir o cadastro"
-            );
+            Alerta.mostrarCamposVazios();
         }
         else if(
             verificaTelefoneEEmail(telefone, email) && 
@@ -122,9 +119,8 @@ public class TelaCadastroUsuario2Controller implements Initializable {
    private boolean verificaSeCadastroRealizado(BufferedReader inbound)
         throws IOException  {
        
-        Gson gson = new Gson();
-        String string = MensageiroCliente.recebeMensagem(inbound);
-        int id = MensageiroCliente.getIdMensagem(string);
+        Mensagem mensagem = Mensageiro.recebeMensagem(inbound, false);
+        int id = mensagem.getId();
         
         if( id == TipoMensagem.CPF_JA_CADASTRADO.getId() ) {
             Alerta.mostraAlerta(
@@ -133,8 +129,9 @@ public class TelaCadastroUsuario2Controller implements Initializable {
             );
         }
         else if( id == TipoMensagem.ERRO.getId() ) {
-            Mensagem erro = gson.fromJson(string, Mensagem.class);
-            Alerta.mostraAlerta( "Erro com o servidor!", erro.getMensagem() );
+            Alerta.mostraAlerta(
+                "Erro com o servidor!", mensagem.getMensagem()
+            );
         }
         else if( id == TipoMensagem.CADASTRO_EFETUADO.getId() ) {
             Alerta.mostraConfirmacao("Cadastro efetuado com sucesso!");
@@ -155,12 +152,12 @@ public class TelaCadastroUsuario2Controller implements Initializable {
             usuario.setTelefone(telefone);
             usuario.setEmail(email);
             usuario.setSenha(senha);
-            Mensagem pedidoCadastro = new Mensagem(usuario);
+            Mensagem mensagem = new Mensagem(usuario);
             
             try {
                 Socket client = new Socket(
-                    InetAddress.getByName(MensageiroCliente.ip),
-                    MensageiroCliente.porta
+                    InetAddress.getByName(Mensageiro.ip),
+                    Mensageiro.porta
                 );
                 PrintWriter outbound = new PrintWriter(
                     client.getOutputStream(), true
@@ -168,7 +165,7 @@ public class TelaCadastroUsuario2Controller implements Initializable {
                 BufferedReader inbound = new BufferedReader(
                     new InputStreamReader( client.getInputStream() )
                 );
-                MensageiroCliente.enviaMensagem(outbound, pedidoCadastro);
+                Mensageiro.enviaMensagem(outbound, mensagem, false);
                 
                 if( verificaSeCadastroRealizado(inbound) ) {
                     TelaLoader.Load(

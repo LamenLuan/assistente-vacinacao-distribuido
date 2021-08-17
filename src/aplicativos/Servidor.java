@@ -7,6 +7,7 @@ package aplicativos;
 
 import com.google.gson.Gson;
 import entidades.Agendamento;
+import entidades.Mensageiro;
 import entidades.TipoMensagem;
 import entidades.Usuario;
 import entidades.Mensagem;
@@ -34,40 +35,32 @@ public class Servidor extends Thread {
 
     @Override
     public void run() {
-       BufferedReader inbound;
-       PrintWriter outbound;
-       Gson gson = new Gson();
-       
-       String string;
-       Mensagem mensagem;
-       
         try {
-            inbound = new BufferedReader(
+            BufferedReader inbound = new BufferedReader(
                 new InputStreamReader( client.getInputStream() )
             );
-            outbound = new PrintWriter( client.getOutputStream(), true );
+            PrintWriter outbound = new PrintWriter(
+                client.getOutputStream(), true
+            );
             
-            string = inbound.readLine();
-            System.out.println("Servidor <- " + string);
-            
-            mensagem = gson.fromJson(string, Mensagem.class);
+            Mensagem mensagem = Mensageiro.recebeMensagem(inbound, true);
             int idMensagem = mensagem.getId();
             
             if( idMensagem == TipoMensagem.PEDIDO_LOGIN.getId() ) {
-                recebePedidoLogin(gson, string, outbound);
+                recebePedidoLogin(mensagem, outbound);
             }
             else if( idMensagem == TipoMensagem.PEDIDO_CADASTRO.getId() ) {
-                recebePedidoCadastro(gson, string, outbound);
+                recebePedidoCadastro(mensagem, outbound);
             }
-            else escreveMensagem(
-                new Mensagem(
+            else {
+                mensagem = new Mensagem(
                     TipoMensagem.ERRO, "Identificador de mensagem inválido"
-                ), gson, outbound
-            );
+                );
+                Mensageiro.enviaMensagem(outbound, mensagem, true);
+            }
         } catch (IOException ex) {
             System.err.println("Erro: " + ex.getMessage() );
         }
-       
     }
 
     /**
@@ -137,19 +130,10 @@ public class Servidor extends Thread {
         usuarios.add(usuario);
     }
     
-    private void escreveMensagem(
-        Mensagem mensagem, Gson gson, PrintWriter outbound
-    ) throws IOException {
-        String str = gson.toJson(mensagem);
-        outbound.println(str);
-        System.out.println("Servidor -> " + str);
-    }
-    
     private void recebePedidoLogin(
-        Gson gson, String string, PrintWriter outbound
+        Mensagem mensagem, PrintWriter outbound
     ) throws IOException {
         Agendamento agendamento = null;
-        Mensagem mensagem = gson.fromJson(string, Mensagem.class);
         
         if(mensagem.getCpf() != null && mensagem.getSenha() != null) {
             Usuario usuario = verificaLogin(mensagem);
@@ -162,7 +146,7 @@ public class Servidor extends Thread {
             }
             else mensagem = new Mensagem(TipoMensagem.LOGIN_INVALIDO);
 
-            escreveMensagem(mensagem, gson, outbound);
+            Mensageiro.enviaMensagem(outbound, mensagem, true);
 
             if(agendamento == null) return;
 
@@ -172,7 +156,7 @@ public class Servidor extends Thread {
             TipoMensagem.ERRO, "Dados para login incompletos"
         );
         
-        escreveMensagem(mensagem, gson, outbound);
+        Mensageiro.enviaMensagem(outbound, mensagem, true);
     }
     
     private boolean isPedidoCadastroValido(Usuario usuario) {
@@ -188,13 +172,10 @@ public class Servidor extends Thread {
     }
     
     private void recebePedidoCadastro(
-        Gson gson, String string, PrintWriter outbound
+        Mensagem mensagem, PrintWriter outbound
     ) throws IOException {
-        Usuario usuario;
-        Mensagem mensagem = gson.fromJson(
-            string, Mensagem.class
-        );
-        usuario = mensagem.getUsuario();
+        
+        Usuario usuario = mensagem.getUsuario();
         
         if ( isPedidoCadastroValido(usuario) ) {  
             if (verificaCpf(usuario.getCpf()) == null) {
@@ -208,6 +189,6 @@ public class Servidor extends Thread {
             TipoMensagem.ERRO, "Dados para cadastro incompletos"
         );
         
-        escreveMensagem(mensagem, gson, outbound);
+        Mensageiro.enviaMensagem(outbound, mensagem, true);
     }
 }

@@ -89,12 +89,7 @@ public class TelaCadastroUsuario1Controller implements Initializable {
         if(
             nome.isBlank() || cpf.isBlank() || dataNascimento.isBlank() || 
             tgGenero.getSelectedToggle() == null
-        ) {
-            Alerta.mostraAlerta(
-                "Campos vazios",
-                "Preencha todos os campos para avançar"
-            );
-        }
+        ) Alerta.mostrarCamposVazios();
         else if( !matcher.find() ) {
             Alerta.mostrarCampoInvalido("O CPF deve ter 11 dígitos!");
         }

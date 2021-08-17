@@ -87,10 +87,13 @@ public class TelaPrincipalController implements Initializable {
 
     @FXML
     private void onAgendar(ActionEvent event) {
-        TelaLoader.Load(
+        FXMLLoader loader = TelaLoader.Load(
             this, root, "/./telas/TelaCadastroAgendamento.fxml" ,
             "Assistente de Vacinação - Ficha de Agendamento"
         );
+        
+        TelaCadastroAgendamentoController controller = loader.getController();
+        controller.inicializaDados(cpf, senha);
     }
 
     @FXML

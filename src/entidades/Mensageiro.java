@@ -15,33 +15,32 @@ import java.net.Socket;
  *
  * @author luanl
  */
-public class MensageiroCliente {
+public class Mensageiro {
     
     public static int porta = 1234;
     public static String ip = "192.168.1.3";
     
     public static void enviaMensagem(
-        PrintWriter outbound, Mensagem mensagem
+        PrintWriter outbound, Mensagem mensagem, boolean servidor
     ) throws IOException {
         Gson gson = new Gson();
         String msg = gson.toJson(mensagem);
-        System.out.println("Cliente -> " + msg);
         outbound.println(msg);
+        System.out.println(
+            (servidor ? "Servidor" : "Cliente") + " -> " + msg
+        );
     }
     
-    public static String recebeMensagem(
-        BufferedReader inbound
+    public static Mensagem recebeMensagem(
+        BufferedReader inbound, boolean servidor
     ) throws IOException {
-        String string = inbound.readLine();
-        System.out.println("Cliente <- " + string);
-        return string;
-    }
-    
-    public static int getIdMensagem(String string) {
         Gson gson = new Gson();
-        Mensagem mensagem = gson.fromJson(string, Mensagem.class);
+        String string = inbound.readLine();
+        System.out.println(
+            (servidor ? "Servidor" : "Cliente") + " <- " + string
+        );
         
-        return mensagem.getId();
+        return gson.fromJson(string, Mensagem.class);
     }
     
     public static void fechaSocketEDutos(
