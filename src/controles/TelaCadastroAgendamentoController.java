@@ -7,7 +7,7 @@ package controles;
 
 import entidades.Agendamento;
 import entidades.Alerta;
-import entidades.DiaVacinacao;
+import entidades.DiasVacinacao;
 import entidades.Mensageiro;
 import entidades.Mensagem;
 import entidades.PostoDeSaude;
@@ -46,7 +46,7 @@ public class TelaCadastroAgendamentoController implements Initializable {
     @FXML
     private ComboBox<PostoDeSaude> cbPostos;
     @FXML
-    private ComboBox<DiaVacinacao> cbDatas;
+    private ComboBox<DiasVacinacao> cbDatas;
     @FXML
     private ComboBox<Slot> cbHorarios;
     @FXML
@@ -136,9 +136,9 @@ public class TelaCadastroAgendamentoController implements Initializable {
 
     @FXML
     private void onSelecionaPosto(ActionEvent event) {
-        cbDatas.getItems().clear();
         cbHorarios.getItems().clear();
         cbHorarios.setDisable(true);
+        cbDatas.getItems().clear();
         btConcluir.setDisable(true);
         
         PostoDeSaude posto = cbPostos.getSelectionModel().getSelectedItem();
@@ -153,11 +153,11 @@ public class TelaCadastroAgendamentoController implements Initializable {
         cbHorarios.getItems().clear();
         btConcluir.setDisable(true);
         
-        DiaVacinacao dia = cbDatas.getSelectionModel().getSelectedItem();
-        cbHorarios.getItems().addAll(
-            dia.getSlots()
-        );
-        cbHorarios.setDisable(false);
+        DiasVacinacao dia = cbDatas.getSelectionModel().getSelectedItem();
+        if(dia != null) {
+            cbHorarios.getItems().addAll( dia.getSlots() );
+            cbHorarios.setDisable(false);
+        }
     }
 
     @FXML

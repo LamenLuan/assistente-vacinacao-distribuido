@@ -58,6 +58,8 @@ public class TelaPrincipalController implements Initializable {
     private Label lbBemVindo;
     @FXML
     private Menu mCadastrar;
+    @FXML
+    private Menu mCRUD;
     
     private void inicializaInfoAgendamento() {
         if(agendamento != null) {
@@ -97,7 +99,10 @@ public class TelaPrincipalController implements Initializable {
         
         inicializaInfoAgendamento();
         
-        if(admin) mCadastrar.setVisible(true);
+        if(admin) {
+            mCadastrar.setVisible(true);
+            mCRUD.setVisible(true);
+        }
     }
 
     /**
@@ -245,6 +250,46 @@ public class TelaPrincipalController implements Initializable {
         );
         TelaCadastroUsuario1Controller controller = loader.getController();
         controller.modoAdmin();
+    }
+
+    @FXML
+    private void onCRUDPostos(ActionEvent event) {
+        FXMLLoader loader = TelaLoader.Load(
+            this, root, "/./telas/TelaCRUDPostos.fxml" ,
+            "Assistente de Vacinação - CRUD de Postos de Saúde"
+        );
+        TelaCRUDPostosController controller = loader.getController();
+        controller.inicializaDados(admin, agendamento, cpf, senha);
+    }
+
+    @FXML
+    private void onCRUDVacinas(ActionEvent event) {
+        FXMLLoader loader = TelaLoader.Load(
+            this, root, "/./telas/TelaCRUDVacinas.fxml" ,
+            "Assistente de Vacinação - CRUD de Vacinas"
+        );
+        TelaCRUDVacinasController controller = loader.getController();
+        controller.inicializaDados(admin, agendamento, cpf, senha);
+    }
+
+    @FXML
+    private void onCRUDDias(ActionEvent event) {
+        FXMLLoader loader = TelaLoader.Load(
+            this, root, "/./telas/TelaCRUDDiasVacinacao.fxml" ,
+            "Assistente de Vacinação - CRUD de dias de vacinação"
+        );
+        TelaCRUDDiasVacinacaoController controller = loader.getController();
+        controller.inicializaDados(admin, agendamento, cpf, senha);
+    }
+
+    @FXML
+    private void onCRUDSlots(ActionEvent event) {
+        FXMLLoader loader = TelaLoader.Load(
+            this, root, "/./telas/TelaCRUDSlots.fxml" ,
+            "Assistente de Vacinação - CRUD de Slots"
+        );
+        TelaCRUDSlotsController controller = loader.getController();
+        controller.inicializaDados(admin, agendamento, cpf, senha);
     }
     
 }

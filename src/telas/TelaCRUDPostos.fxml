@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCRUDPostosController">
+   <children>
+      <ListView fx:id="lvPostos" layoutX="14.0" layoutY="109.0" onMouseClicked="#onSelecionaPosto" prefHeight="272.0" prefWidth="200.0" />
+      <StackPane layoutX="14.0" layoutY="27.0" prefHeight="18.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="btVoltar" mnemonicParsing="false" onAction="#onVoltar" prefHeight="31.0" prefWidth="0.0" StackPane.alignment="CENTER_LEFT">
+               <StackPane.margin>
+                  <Insets left="32.0" />
+               </StackPane.margin>
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@../midias/outline_arrow_back_black_24dp.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Label text="Gerenciamento de Postos">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </StackPane>
+      <TextField fx:id="tfNomePosto" layoutX="240.0" layoutY="109.0" prefHeight="25.0" prefWidth="357.0" promptText="Digite o nome do Posto de Saúde" />
+      <TextField fx:id="tfEnderecoPosto" layoutX="240.0" layoutY="188.0" prefHeight="25.0" prefWidth="357.0" promptText="Digite o endereço do Posto de Saúde" />
+      <Button fx:id="btAddPosto" layoutX="240.0" layoutY="293.0" mnemonicParsing="false" onAction="#onAddPosto" text="Adicionar US" />
+      <Button fx:id="btUpdatePosto" layoutX="378.0" layoutY="293.0" mnemonicParsing="false" onAction="#onUpdatePosto" text="Atualizar US" />
+      <Button fx:id="btRemovePosto" layoutX="516.0" layoutY="293.0" mnemonicParsing="false" onAction="#onRemovePosto" text="Remover US" />
+   </children>
+</AnchorPane>

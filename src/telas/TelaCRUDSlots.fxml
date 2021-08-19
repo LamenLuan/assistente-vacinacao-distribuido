@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="root" prefHeight="585.0" prefWidth="770.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCRUDSlotsController">
+   <children>
+      <StackPane layoutX="32.0" layoutY="38.0" prefHeight="18.0" prefWidth="600.0">
+         <children>
+            <Label text="Gerenciamento de slots para os dias de vacinação">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="btVoltar" mnemonicParsing="false" onAction="#onVoltar" prefHeight="31.0" prefWidth="0.0" StackPane.alignment="CENTER_LEFT">
+               <StackPane.margin>
+                  <Insets left="32.0" />
+               </StackPane.margin>
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="38.0" onMouseClicked="#onVoltar" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@../midias/outline_arrow_back_black_24dp.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </StackPane>
+      <ListView fx:id="lvPostosDeSaude" layoutX="32.0" layoutY="96.0" onMouseClicked="#onSelecionarPosto" prefHeight="200.0" prefWidth="161.0" />
+      <ListView fx:id="lvDiasVacinacao" layoutX="206.0" layoutY="96.0" onMouseClicked="#onSelecionarDia" prefHeight="200.0" prefWidth="161.0" />
+      <Label layoutX="381.0" layoutY="100.0" text="Slot:" />
+      <TextField fx:id="tfQuantidade" layoutX="592.0" layoutY="152.0" prefHeight="25.0" prefWidth="81.0" promptText="Quantidade" />
+      <Label layoutX="381.0" layoutY="156.0" text="Quantidade de vacinas para esse slot" />
+      <Button fx:id="btAddSlot" layoutX="381.0" layoutY="209.0" mnemonicParsing="false" onAction="#onAddSlot" text="Adicionar slot" />
+      <Button fx:id="btUpdateSlot" layoutX="513.0" layoutY="209.0" mnemonicParsing="false" onAction="#onUpdateSlot" text="Atualizar slot" />
+      <Button fx:id="btRemoveSlot" layoutX="642.0" layoutY="209.0" mnemonicParsing="false" onAction="#onRemoveSlot" text="Remover slot" />
+      <TextField fx:id="tfSlot" layoutX="416.0" layoutY="96.0" prefHeight="25.0" prefWidth="253.0" promptText="Digite qual será o slot de horário" />
+      <ListView fx:id="lvSlots" layoutX="32.0" layoutY="340.0" onMouseClicked="#onSelecionarSlot" prefHeight="200.0" prefWidth="712.0" />
+   </children>
+</AnchorPane>

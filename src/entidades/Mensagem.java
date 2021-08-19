@@ -17,7 +17,7 @@ public class Mensagem {
     private String cpf = null, senha = null, mensagem = null, data = null,
         nomePosto = null, endPosto = null, slot = null, vacina = null;
     private Usuario usuario = null;
-    private ArrayList<PostoDeSaude> postosSaude;
+    private ArrayList<PostoDeSaude> postosSaude = null;
     
     public Mensagem(TipoMensagem tipoMsg) {
         this.id = tipoMsg.getId();

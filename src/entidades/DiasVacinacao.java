@@ -11,13 +11,13 @@ import java.util.ArrayList;
  *
  * @author Gabriel
  */
-public class DiaVacinacao {
+public class DiasVacinacao {
     private String dia;
     private ArrayList<Slot> slots;
 
-    public DiaVacinacao(String dia, ArrayList<Slot> slots) {
+    public DiasVacinacao(String dia) {
         this.dia = dia;
-        this.slots = slots;
+        this.slots = new ArrayList<>();
     }
 
     public String getDia() {
@@ -38,7 +38,8 @@ public class DiaVacinacao {
 
     @Override
     public String toString() {
-        return this.dia;
+        return dia; //To change body of generated methods, choose Tools | Templates.
     }
+    
     
 }

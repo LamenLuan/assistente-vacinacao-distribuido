@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaPrincipalController">
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaPrincipalController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -27,6 +27,14 @@
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#onCadastrarAdmin" text="Administrador" />
                </items>
+            </Menu>
+            <Menu fx:id="mCRUD" mnemonicParsing="false" text="CRUD" visible="false">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#onCRUDPostos" text="Postos" />
+                  <MenuItem mnemonicParsing="false" onAction="#onCRUDVacinas" text="Vacinas" />
+                  <MenuItem mnemonicParsing="false" onAction="#onCRUDDias" text="Dias" />
+                  <MenuItem mnemonicParsing="false" onAction="#onCRUDSlots" text="Slots" />
+              </items>
             </Menu>
         </menus>
       </MenuBar>

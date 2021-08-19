@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="root" prefHeight="312.0" prefWidth="622.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCRUDDiasVacinacaoController">
+   <children>
+      <StackPane layoutX="22.0" layoutY="28.0" prefHeight="18.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="btVoltar" mnemonicParsing="false" onAction="#onVoltar" prefHeight="31.0" prefWidth="0.0" StackPane.alignment="CENTER_LEFT">
+               <StackPane.margin>
+                  <Insets left="32.0" />
+               </StackPane.margin>
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="38.0" onMouseClicked="#onVoltar" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@../midias/outline_arrow_back_black_24dp.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Label text="Gerenciamento de dias para Vacinação">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </StackPane>
+      <ListView fx:id="lvPostosDeSaude" layoutX="22.0" layoutY="86.0" onMouseClicked="#onSelecionarPosto" prefHeight="200.0" prefWidth="161.0" />
+      <ListView fx:id="lvDiasVacinacao" layoutX="205.0" layoutY="86.0" onMouseClicked="#onSelecionaDia" prefHeight="200.0" prefWidth="161.0" />
+      <DatePicker fx:id="dpData" layoutX="395.0" layoutY="86.0" promptText="Selecione uma data" />
+      <Button fx:id="btAddData" layoutX="395.0" layoutY="132.0" mnemonicParsing="false" onAction="#onAddData" prefHeight="25.0" prefWidth="115.0" text="Adicionar data" />
+      <Button fx:id="btUpdateData" layoutX="395.0" layoutY="174.0" mnemonicParsing="false" onAction="#onUpdateData" prefHeight="25.0" prefWidth="115.0" text="Atualizar data" />
+      <Button fx:id="btRemoveData" layoutX="395.0" layoutY="214.0" mnemonicParsing="false" onAction="#onRemoveData" prefHeight="25.0" prefWidth="115.0" text="Remover data" />
+   </children>
+</AnchorPane>

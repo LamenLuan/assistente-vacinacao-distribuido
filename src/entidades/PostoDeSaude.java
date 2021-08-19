@@ -15,7 +15,7 @@ public class PostoDeSaude {
     private String nomePosto;
     private String endPosto;
     private ArrayList<Vacina> vacinasPosto;
-    private ArrayList<DiaVacinacao> diasVacinacao;
+    private ArrayList<DiasVacinacao> diasVacinacao;
 
     public PostoDeSaude(String nomePosto, String endPosto) {
         this.nomePosto = nomePosto;
@@ -40,11 +40,11 @@ public class PostoDeSaude {
         this.endPosto = endPosto;
     }
 
-    public ArrayList<DiaVacinacao> getDiasVacinacao() {
+    public ArrayList<DiasVacinacao> getDiasVacinacao() {
         return diasVacinacao;
     }
 
-    public void setDiasVacinacao(ArrayList<DiaVacinacao> diasVacinacao) {
+    public void setDiasVacinacao(ArrayList<DiasVacinacao> diasVacinacao) {
         this.diasVacinacao = diasVacinacao;
     }
 
