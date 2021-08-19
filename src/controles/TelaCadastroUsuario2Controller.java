@@ -173,6 +173,8 @@ public class TelaCadastroUsuario2Controller implements Initializable {
                         "Assistente de Vacinação - Acesso ao sistema"
                     );
                 }
+                
+                Mensageiro.fechaSocketEDutos(client, outbound, inbound);
             } catch (IOException ex) {
                 System.err.println( "Erro:" + ex.getMessage() );
                 Alerta.mostrarErroComunicacao();

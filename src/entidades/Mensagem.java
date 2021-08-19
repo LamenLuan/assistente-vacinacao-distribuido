@@ -5,16 +5,19 @@
  */
 package entidades;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author luanl
  */
 public class Mensagem {
     private int id;
-    private Boolean agendamento = null, admin = null;
-    private String cpf = null, senha = null, mensagem = null;
-    private Agendamento dadosAgendamento = null;
+    private Boolean agendamento = null, admin = null, segundaDose = null;
+    private String cpf = null, senha = null, mensagem = null, data = null,
+        nomePosto = null, endPosto = null, slot = null, vacina = null;
     private Usuario usuario = null;
+    private ArrayList<PostoDeSaude> postosSaude;
     
     public Mensagem(TipoMensagem tipoMsg) {
         this.id = tipoMsg.getId();
@@ -35,9 +38,17 @@ public class Mensagem {
     }
     
     // Tem agendamento
-    public Mensagem(Agendamento dadosAgendamento) {
+    public Mensagem(
+        String nomePosto, String endPosto, String data, String slot,
+        String vacina, boolean segundaDose
+    ) {
         this.id = TipoMensagem.TEM_AGENDAMENTO.getId();
-        this.dadosAgendamento = dadosAgendamento;
+        this.nomePosto = nomePosto;
+        this.endPosto = endPosto;
+        this.data = data;
+        this.slot = slot;
+        this.vacina = vacina;
+        this.segundaDose = segundaDose;
     }
     
     // Pedido de cadastro
@@ -50,6 +61,24 @@ public class Mensagem {
     public Mensagem(TipoMensagem tipoMsg, String mensagem) {
         this.id = tipoMsg.getId();
         this.mensagem = mensagem;
+    }
+    
+    // Pedido agendamento
+    public Mensagem(
+        String cpf, String senha, String nomePosto, String data, String slot
+    ) {
+        this.id = TipoMensagem.PEDIDO_AGENDAMENTO.getId();
+        this.cpf = cpf;
+        this.senha = senha;
+        this.nomePosto = nomePosto;
+        this.data = data;
+        this.slot = slot;
+    }
+    
+    // Tem vacinas
+    public Mensagem(ArrayList<PostoDeSaude> dadosAgendamento) {
+        this.id = TipoMensagem.TEM_VACINAS.getId();
+        this.postosSaude = dadosAgendamento;
     }
 
     public int getId() {
@@ -83,6 +112,14 @@ public class Mensagem {
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
     }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
     
     public boolean isAgendamento() {
         return agendamento;
@@ -100,12 +137,12 @@ public class Mensagem {
         this.admin = admin;
     }
     
-    public Agendamento getDadosAgendamento() {
-        return dadosAgendamento;
+    public boolean isSegundaDose() {
+        return segundaDose;
     }
-
-    public void setDadosAgendamento(Agendamento dadosAgendamento) {
-        this.dadosAgendamento = dadosAgendamento;
+    
+    public void setSegundaDose(boolean segundaDose) {
+        this.segundaDose = segundaDose;
     }
     
     public Usuario getUsuario() {
@@ -114,5 +151,45 @@ public class Mensagem {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public String getNomePosto() {
+        return nomePosto;
+    }
+
+    public void setNomePosto(String nomePosto) {
+        this.nomePosto = nomePosto;
+    }
+
+    public String getEndPosto() {
+        return endPosto;
+    }
+
+    public void setEndPosto(String endPosto) {
+        this.endPosto = endPosto;
+    }
+
+    public String getSlot() {
+        return slot;
+    }
+
+    public void setSlot(String slot) {
+        this.slot = slot;
+    }
+
+    public String getVacina() {
+        return vacina;
+    }
+
+    public void setVacina(String vacina) {
+        this.vacina = vacina;
+    }
+
+    public ArrayList<PostoDeSaude> getPostosSaude() {
+        return postosSaude;
+    }
+
+    public void setPostosSaude(ArrayList<PostoDeSaude> postosSaude) {
+        this.postosSaude = postosSaude;
     }
 }

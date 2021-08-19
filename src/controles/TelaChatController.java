@@ -59,7 +59,7 @@ public class TelaChatController implements Initializable {
         );
         
         TelaPrincipalController controller = loader.getController();
-        controller.inicializaDados(admin, cpf, senha, agendamento);
+        controller.inicializaDados(admin, agendamento, cpf, senha);
     }
 
     @FXML

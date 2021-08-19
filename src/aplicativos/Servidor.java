@@ -5,12 +5,15 @@
  */
 package aplicativos;
 
-import com.google.gson.Gson;
 import entidades.Agendamento;
+import entidades.DiaVacinacao;
 import entidades.Mensageiro;
 import entidades.TipoMensagem;
 import entidades.Usuario;
 import entidades.Mensagem;
+import entidades.PostoDeSaude;
+import entidades.Slot;
+import entidades.Vacina;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -28,6 +31,7 @@ public class Servidor extends Thread {
     private static int porta = 1234;
     protected Socket client;
     private static ArrayList<Usuario> usuarios;
+    private static ArrayList<PostoDeSaude> postos;
 
     private Servidor(Socket client) {
         this.client = client;
@@ -44,13 +48,22 @@ public class Servidor extends Thread {
             );
             
             Mensagem mensagem = Mensageiro.recebeMensagem(inbound, true);
-            int idMensagem = mensagem.getId();
+            int id = mensagem.getId();
             
-            if( idMensagem == TipoMensagem.PEDIDO_LOGIN.getId() ) {
+            if( id == TipoMensagem.PEDIDO_LOGIN.getId() ) {
                 recebePedidoLogin(mensagem, outbound);
             }
-            else if( idMensagem == TipoMensagem.PEDIDO_CADASTRO.getId() ) {
+            else if( id == TipoMensagem.PEDIDO_CADASTRO.getId() ) {
                 recebePedidoCadastro(mensagem, outbound);
+            }
+            else if( id == TipoMensagem.PEDIDO_DADOS_AGENDAMENTO.getId() ) {
+                recebePedidoDadosAgendamento(mensagem, outbound);
+            }
+            else if( id == TipoMensagem.PEDIDO_AGENDAMENTO.getId() ) {
+                recebePedidoAgendamento(mensagem, outbound);
+            }
+            else if( id == TipoMensagem.PEDIDO_CANCELAMENTO.getId() ) {
+                recebePedidoCancelamento(mensagem, outbound);
             }
             else {
                 mensagem = new Mensagem(
@@ -74,20 +87,9 @@ public class Servidor extends Thread {
 //        porta = scanner.nextInt();
         
         usuarios = new ArrayList<>();
-        usuarios.add(
-            new Usuario(
-                "Fulano", "11111111111", "01/01/2001", "1111111111",
-                "", "senha", true, true, false, new Agendamento(
-                    "Local", "Data", "Hora", "Astrazeneca", true
-                )
-            )
-        );
-        usuarios.add(
-            new Usuario(
-                "Ciclano", "99999999999", "01/01/2001", "1111111111",
-                "", "senha", true, true, true, null
-            )
-        );
+        addUsuarios();
+        postos = new ArrayList<>();
+        addPostos();
         
         try {
             server = new ServerSocket(porta);
@@ -150,7 +152,14 @@ public class Servidor extends Thread {
 
             if(agendamento == null) return;
 
-            mensagem = new Mensagem(agendamento);
+            mensagem = new Mensagem(
+                agendamento.getNomePosto(),
+                agendamento.getEndPosto(),
+                agendamento.getData(),
+                agendamento.getSlot(),
+                agendamento.getVacina(),
+                agendamento.isSegundaDose()
+            );
         }
         else mensagem = new Mensagem(
             TipoMensagem.ERRO, "Dados para login incompletos"
@@ -190,5 +199,211 @@ public class Servidor extends Thread {
         );
         
         Mensageiro.enviaMensagem(outbound, mensagem, true);
+    }
+    
+    private synchronized ArrayList<PostoDeSaude> temVacinas() {
+        ArrayList<PostoDeSaude> postosComVacinas = new ArrayList<>();
+        
+        for(PostoDeSaude posto : postos) {
+            if( !posto.getDiasVacinacao().isEmpty() ) {
+                for(DiaVacinacao diaVacinacao : posto.getDiasVacinacao() ) {
+                    for( Slot slot : diaVacinacao.getSlots() ) {
+                        if(slot.getQtdSlotVacinacao() > 0) {
+                            postosComVacinas.add(posto);
+                            break;
+                        }
+                    }
+                    if(postosComVacinas.contains(posto)) break;
+                }
+            }
+        }
+        
+        return postosComVacinas;
+    }
+
+    private void recebePedidoDadosAgendamento(
+        Mensagem mensagem, PrintWriter outbound
+    ) throws IOException {
+        if(verificaLogin(mensagem) != null) {
+            ArrayList<PostoDeSaude> postosComVacinas = temVacinas();
+            
+            if( postosComVacinas.isEmpty() ) 
+                mensagem = new Mensagem(TipoMensagem.NAO_TEM_VACINAS);
+            else {
+                mensagem = new Mensagem(postosComVacinas);
+            }
+        }
+        else {
+            mensagem = new Mensagem(
+                TipoMensagem.ERRO,
+                "Dados de validação incorretos ou inexistentes!"
+            );
+        }
+        
+        Mensageiro.enviaMensagem(outbound, mensagem, true);
+    }
+    
+    private synchronized Slot encontraSlot(
+            String nome, String data, String slotPosto
+    ) {
+        // Verifico se os dados do agendamento condizem com os do servidor
+        for (PostoDeSaude posto : postos) {
+            if( posto.getNomePosto().equals(nome) ) {
+                for (DiaVacinacao dia : posto.getDiasVacinacao() ) {
+                    if( dia.getDia().equals(data) ) {
+                        for ( Slot slot : dia.getSlots() ) {
+                            if( slot.getSlotVacinacao().equals(slotPosto) )
+                                return slot;
+                        }   
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    private synchronized void devolveSlot(Agendamento agendamento) {
+        Slot slot = encontraSlot(
+            agendamento.getNomePosto(),
+            agendamento.getData(),
+            agendamento.getSlot()
+        );
+
+        if(slot != null) {
+            slot.setQtdSlotVacinacao(slot.getQtdSlotVacinacao() + 1);
+        }
+    }
+    
+    private synchronized void saveAgendamento(
+        Mensagem mensagem, Slot slotAgendamento, Usuario usuario,
+        PrintWriter outbound
+    ) throws IOException {
+        
+        Agendamento agendamento = usuario.getAgendamento();
+        
+        if(agendamento != null ) devolveSlot(agendamento);
+        
+        slotAgendamento.setQtdSlotVacinacao(
+            slotAgendamento.getQtdSlotVacinacao() - 1
+        );
+
+        String endereco = null;
+        for (PostoDeSaude posto : postos) {
+            if( posto.getNomePosto().equals( mensagem.getNomePosto() ) ) {
+                endereco = posto.getEndPosto();
+            }
+        }
+
+        if(endereco != null) {
+            usuario.setAgendamento(
+                new Agendamento(
+                    mensagem.getNomePosto(), endereco, mensagem.getData(),
+                    mensagem.getSlot(), null, false
+                )
+            );
+            
+            mensagem = new Mensagem(TipoMensagem.AGENDAMENTO_CONCLUIDO);
+        }
+        else mensagem = new Mensagem(
+            TipoMensagem.ERRO, "Erro, agendamento não pôde ser salvo."
+        );
+        
+        Mensageiro.enviaMensagem(outbound, mensagem, true);
+    }
+
+    private synchronized void recebePedidoAgendamento(
+        Mensagem mensagem, PrintWriter outbound
+    ) throws IOException {
+        String nome = mensagem.getNomePosto(), data = mensagem.getData(),
+            slotPosto = mensagem.getSlot();
+        Usuario usuario = verificaLogin(mensagem);
+        
+        if(usuario != null) {
+            Slot slot = encontraSlot(nome, data, slotPosto);
+            if(slot != null && slot.getQtdSlotVacinacao() > 0)
+                saveAgendamento(mensagem, slot, usuario, outbound);
+        }
+        else {
+            mensagem = new Mensagem(
+                TipoMensagem.ERRO,
+                "Dados de validação incorretos ou inexistentes!"
+            );
+            Mensageiro.enviaMensagem(outbound, mensagem, true);
+        }
+    }
+    
+    private void recebePedidoCancelamento(
+        Mensagem mensagem, PrintWriter outbound
+    ) throws IOException {
+        
+        Usuario usuario = verificaLogin(mensagem);
+        
+        if(usuario != null) {
+            Agendamento agendamento = usuario.getAgendamento();
+            if(agendamento != null) {
+                devolveSlot(agendamento);
+                usuario.setAgendamento(null);
+                mensagem = new Mensagem(TipoMensagem.CONFIRMACAO_CANCELAMENTO);
+            }
+            else mensagem = new Mensagem(
+                TipoMensagem.ERRO,
+                "Não existe agendamento registrado no servidor."
+            );
+        }
+        else {
+            mensagem = new Mensagem(
+                TipoMensagem.ERRO,
+                "Dados de validação incorretos ou inexistentes."
+            );
+        }
+        
+        Mensageiro.enviaMensagem(outbound, mensagem, true);
+    }
+    
+    private static void addUsuarios() {
+        usuarios.add(
+            new Usuario(
+                "Fulano", "11111111111", "01/01/2001", "1111111111",
+                "", "senha", true, true, false, null
+            )
+        );
+        usuarios.add(
+            new Usuario(
+                "Ciclano", "99999999999", "01/01/2001", "1111111111",
+                "", "senha", true, true, true, null
+            )
+        );
+    }
+    
+    private static void addPostos() {
+        PostoDeSaude posto = new PostoDeSaude(
+            "Unidade de Saúde Zé Gotinha Rei Delas", "Avenida Alan Turing, 0101"
+        );
+        
+        posto.getVacinasPosto().add(
+            new Vacina("Pfizer", 200, true)
+        );
+        posto.getDiasVacinacao().add(
+            new DiaVacinacao( "20/08/2021", new ArrayList<>() )
+        );
+        posto.getDiasVacinacao().add(
+            new DiaVacinacao( "21/08/2021", new ArrayList<>() )
+        );
+        
+        posto.getDiasVacinacao().get(0).getSlots().add(
+            new Slot("Manhã", 15)
+        );
+        posto.getDiasVacinacao().get(0).getSlots().add(
+            new Slot("Tarde", 15)
+        );
+        posto.getDiasVacinacao().get(1).getSlots().add(
+            new Slot("Tarde", 15)
+        );
+        posto.getDiasVacinacao().get(1).getSlots().add(
+            new Slot("Noite", 15)
+        );
+        
+        postos.add(posto);
     }
 }

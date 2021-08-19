@@ -36,21 +36,21 @@
             <Insets bottom="32.0" />
          </VBox.margin>
       </StackPane>
-      <ComboBox fx:id="cbLocais" prefWidth="200.0" promptText="Local">
+      <ComboBox fx:id="cbPostos" onAction="#onSelecionaPosto" prefWidth="200.0" promptText="Local">
          <VBox.margin>
             <Insets bottom="16.0" />
          </VBox.margin>
       </ComboBox>
-      <ComboBox fx:id="cbDatas" prefWidth="200.0" promptText="Data">
+      <ComboBox fx:id="cbDatas" disable="true" onAction="#onSelecionaData" prefWidth="200.0" promptText="Data">
          <VBox.margin>
             <Insets bottom="16.0" />
          </VBox.margin>
       </ComboBox>
-      <ComboBox fx:id="cbHorarios" prefWidth="200.0" promptText="Horário">
+      <ComboBox fx:id="cbHorarios" disable="true" onAction="#onSelecionaSlot" prefWidth="200.0" promptText="Horário">
          <VBox.margin>
             <Insets bottom="32.0" />
          </VBox.margin>
       </ComboBox>
-      <Button mnemonicParsing="false" onAction="#onConcluirCadastro" prefWidth="200.0" text="Concluir" />
+      <Button fx:id="btConcluir" disable="true" mnemonicParsing="false" onAction="#onConcluirCadastro" prefWidth="200.0" text="Concluir" />
    </children>
 </VBox>

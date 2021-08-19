@@ -75,7 +75,7 @@ public class TelaLoginController implements Initializable {
         );
         
         TelaPrincipalController controller = loader.getController();
-        controller.inicializaDados(admin, cpf, senha, agendamento);
+        controller.inicializaDados(admin, agendamento, cpf, senha);
     }
     
     private void verificaSeLoginAprovado(BufferedReader inbound) throws IOException {
@@ -91,13 +91,20 @@ public class TelaLoginController implements Initializable {
         else if( id == TipoMensagem.LOGIN_APROVADO.getId() ) {
             Mensagem temAgendamento = null;
             
-            if( mensagem.isAgendamento() ) 
+            if( mensagem.isAgendamento() )
                 temAgendamento = Mensageiro.recebeMensagem(inbound, false);
             
             abreTelaPrincipal(
                 mensagem.isAdmin(),
                 temAgendamento != null
-                        ? temAgendamento.getDadosAgendamento() : null
+                    ? new Agendamento(
+                        temAgendamento.getNomePosto(),
+                        temAgendamento.getEndPosto(),
+                        temAgendamento.getData(),
+                        temAgendamento.getSlot(),
+                        temAgendamento.getVacina(),
+                        temAgendamento.isSegundaDose()
+                    ) : null
             );
         }
     }
