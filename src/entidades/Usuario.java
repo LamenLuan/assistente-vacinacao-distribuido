@@ -10,7 +10,7 @@ package entidades;
  */
 public class Usuario {
     private String nome, cpf, dataNascimento, telefone, email, senha;
-    private boolean masculino, comorbidade, admin;
+    private boolean genero, comorbidade, admin;
     private Agendamento agendamento;
 
     public Usuario(
@@ -24,7 +24,7 @@ public class Usuario {
         this.telefone = telefone;
         this.email = email;
         this.senha = senha;
-        this.masculino = masculino;
+        this.genero = masculino;
         this.comorbidade = comorbidade;
         this.admin = admin;
         this.agendamento = agendamento;
@@ -78,12 +78,12 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public boolean isMasculino() {
-        return masculino;
+    public boolean isGenero() {
+        return genero;
     }
 
-    public void setMasculino(boolean masculino) {
-        this.masculino = masculino;
+    public void setGenero(boolean genero) {
+        this.genero = genero;
     }
 
     public boolean isComorbidade() {

@@ -57,7 +57,7 @@ public class TelaCadastroUsuario1Controller implements Initializable {
         cpfField.setText( usuario.getCpf() );
         dataField.getEditor().setText( usuario.getDataNascimento() );
         
-        if( usuario.isMasculino() ) rbMasculino.setSelected(true);
+        if( usuario.isGenero() ) rbMasculino.setSelected(true);
         else rbFeminino.setSelected(true);
         
         // Nao precisa de else aqui pois a comorbidade eh default false
