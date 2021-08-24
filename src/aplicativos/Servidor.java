@@ -35,6 +35,7 @@ import entidades.mensagensCRUD.ReadDias;
 import entidades.mensagensCRUD.RemoveDia;
 import entidades.mensagensCRUD.RemoveSlot;
 import entidades.mensagensCRUD.RemoveVacina;
+import entidades.mensagensCRUD.SucessoCRUD;
 import entidades.mensagensCRUD.UpdateDia;
 import entidades.mensagensCRUD.UpdateSlot;
 import entidades.mensagensCRUD.UpdateVacina;
@@ -45,7 +46,6 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 /**
  *
  * @author luanl
@@ -331,7 +331,7 @@ public class Servidor extends Thread {
         for (PostoDeSaude posto : postos) {
             if( posto.getNomePosto().equals(nome) ) {
                 for (DiasVacinacao dia : posto.getDiasVacinacao() ) {
-                    if( dia.getDia().equals(data) ) {
+                    if( dia.getData().equals(data) ) {
                         for ( Slot slot : dia.getSlots() ) {
                             if( slot.getSlotVacinacao().equals(slotPosto) )
                                 return slot;
@@ -461,7 +461,7 @@ public class Servidor extends Thread {
             );
 
             savePosto(posto);
-            mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+            mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         }
         else mensagem = new Erro(
             "Dados de validação incorretos ou inexistentes!"
@@ -536,7 +536,7 @@ public class Servidor extends Thread {
             
         postos.set(indice, postoAlvo);
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);
     }
@@ -554,7 +554,7 @@ public class Servidor extends Thread {
                                            .getNomePostoAlvo());
         
         if(postos.remove(postoAlvo))
-            mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+            mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         else
             mensagem = new MensagemCRUD(TipoMensagem.ERRO);
        
@@ -577,7 +577,7 @@ public class Servidor extends Thread {
         
         saveVacina(posto, cadastraVacina.getVacinasPosto());
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);
     }
@@ -624,10 +624,10 @@ public class Servidor extends Thread {
             postos.get(indicePosto).getVacinasPosto().indexOf(vacinaAlvo);
             
         postos.get(indicePosto).getVacinasPosto().set(
-            indiceVacina, pedidoUpdateVacina.getVacinaPosto()
+            indiceVacina, pedidoUpdateVacina.getVacinasPosto()
         );
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);
     }
@@ -651,7 +651,7 @@ public class Servidor extends Thread {
         int indicePosto = postos.indexOf(postoAlvo);
         
         if(postos.get(indicePosto).getVacinasPosto().remove(vacinaAlvo)) {
-            mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+            mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         }
         
         else mensagem = new MensagemCRUD(TipoMensagem.ERRO);
@@ -675,7 +675,7 @@ public class Servidor extends Thread {
             new DiasVacinacao( cadastroDia.getDiaPosto().getData() )
         );
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);    
     }
@@ -694,14 +694,12 @@ public class Servidor extends Thread {
         posto = findPosto(nomePosto.getNomePosto());
         
         for (DiasVacinacao diaVacinacao : posto.getDiasVacinacao()) {
-            Dia novoDia = new Dia(diaVacinacao.getDia());
+            Dia novoDia = new Dia(diaVacinacao.getData());
             
             if(!dias.contains(novoDia)) dias.add(novoDia);
         }
         
-        mensagem = new ListagemDiasVacinacao(
-            nomePosto.getCpf(), nomePosto.getSenha(), posto.getNomePosto(), dias
-        );
+        mensagem = new ListagemDiasVacinacao(posto.getNomePosto(), dias);
         
         escreveMensagem(mensagem, gson, outbound);
     }
@@ -712,7 +710,7 @@ public class Servidor extends Thread {
             
             if(p.getNomePosto().equals(nomePosto)){
                 for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
-                    if(p.getDiasVacinacao().get(j).getDia().equals(data)){
+                    if(p.getDiasVacinacao().get(j).getData().equals(data)){
                         return p.getDiasVacinacao().get(j);
                     }
                 }
@@ -741,11 +739,11 @@ public class Servidor extends Thread {
         int indiceDia =
             postos.get(indicePosto).getDiasVacinacao().indexOf(diaAlvo);
         
-        postos.get(indicePosto).getDiasVacinacao().get(indiceDia).setDia(
+        postos.get(indicePosto).getDiasVacinacao().get(indiceDia).setData(
             updateDia.getNovaData()
         );
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);
     }
@@ -765,7 +763,7 @@ public class Servidor extends Thread {
         int indicePosto = postos.indexOf(postoAlvo);
         
         if(postos.get(indicePosto).getDiasVacinacao().remove(diaAlvo)) {
-            mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+            mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         }
         else mensagem = new MensagemCRUD(TipoMensagem.ERRO);
         
@@ -788,7 +786,7 @@ public class Servidor extends Thread {
             if(postos.get(indicePosto)
                     .getDiasVacinacao()
                     .get(i)
-                    .getDia()
+                    .getData()
                     .equals(cadastroSlot.getData())){
                 Slot novoSlot = new Slot(cadastroSlot.getSlotCadastro(), 
                                         cadastroSlot.getQtdSlotVacinacao());
@@ -800,7 +798,7 @@ public class Servidor extends Thread {
             
         }
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);    
     }
@@ -865,7 +863,7 @@ public class Servidor extends Thread {
                                                           updateSlot.getSlot()
                                                           .getQtdSlotVacinacao());
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);
     }
@@ -891,7 +889,7 @@ public class Servidor extends Thread {
         postos.get(indicePosto).getDiasVacinacao().get(indiceDia)
                                                   .getSlots().remove(slot);
         
-        mensagem = new MensagemCRUD(TipoMensagem.OPERACAO_CRUD_SUCESSO);
+        mensagem = new SucessoCRUD("Operação realizada com sucesso!");
         
         escreveMensagem(mensagem, gson, outbound);
     }

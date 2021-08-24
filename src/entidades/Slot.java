@@ -36,6 +36,7 @@ public class Slot {
 
     @Override
     public String toString() {
-        return this.slotVacinacao;
+        return slotVacinacao + " || Quantidade de vacinas realizadas no Slot: "
+                + qtdSlotVacinacao;
     }
 }

@@ -79,7 +79,7 @@ public class TelaCadastroAgendamentoController implements Initializable {
             
         Mensagem mensagem = new Mensagem(
             cpf, senha, cbPostos.getValue().getNomePosto(),
-            cbDatas.getValue().getDia(),
+            cbDatas.getValue().getData(),
             cbHorarios.getValue().getSlotVacinacao()
         );
 
@@ -104,7 +104,7 @@ public class TelaCadastroAgendamentoController implements Initializable {
                 agendamento = new Agendamento(
                     posto.getNomePosto(),
                     posto.getEndPosto(),
-                    cbDatas.getValue().getDia(),
+                    cbDatas.getValue().getData(),
                     cbHorarios.getValue().getSlotVacinacao(),
                     null, false
                 );

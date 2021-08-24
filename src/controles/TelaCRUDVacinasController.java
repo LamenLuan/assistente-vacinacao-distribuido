@@ -114,7 +114,10 @@ public class TelaCRUDVacinasController implements Initializable {
         PedidoListagemPostos pedidoListagemPostos = new PedidoListagemPostos(
             cpf, senha
         );
-        rbSim.setUserData(true);
+        rbSim.setSelected(false);
+        rbNao.setSelected(false);
+        
+        rbSim.setUserData(false);
         rbNao.setUserData(false);
         
         try {
@@ -158,6 +161,15 @@ public class TelaCRUDVacinasController implements Initializable {
         
         lvPostosDeSaude.setItems(obsPostos);
         lvVacinas.setItems(obsVacinas);
+        
+        tfNomeVacina.setText(null);
+        tfQuantidade.setText(null);
+        
+        rbSim.setSelected(false);
+        rbNao.setSelected(false);
+        
+        rbSim.setUserData(false);
+        rbNao.setUserData(false);
     }
     
     @FXML
@@ -214,7 +226,12 @@ public class TelaCRUDVacinasController implements Initializable {
         
         tfNomeVacina.setText(null);
         tfQuantidade.setText(null);
-    
+        
+        rbSim.setSelected(false);
+        rbNao.setSelected(false);
+        
+        rbSim.setUserData(false);
+        rbNao.setUserData(false);
     }
 
     @FXML
@@ -228,7 +245,8 @@ public class TelaCRUDVacinasController implements Initializable {
         
         UpdateVacina updateVacina = new UpdateVacina(nomePostoAlvo, 
                                                      nomeVacinaAlvo, 
-                                                     novaVacina);
+                                                     novaVacina,
+                                                     cpf, senha);
         
         try {
             Socket client = new Socket(
@@ -281,6 +299,12 @@ public class TelaCRUDVacinasController implements Initializable {
         
         tfNomeVacina.setText(null);
         tfQuantidade.setText(null);
+        
+        rbSim.setSelected(false);
+        rbNao.setSelected(false);
+        
+        rbSim.setUserData(false);
+        rbNao.setUserData(false);
     }
 
     
@@ -352,9 +376,15 @@ public class TelaCRUDVacinasController implements Initializable {
                                                               .getQtdVacina()));
         
         if(itemListaVacinas.getVacina().isHasSegundaDose()){
+            rbSim.setSelected(true);
+            rbNao.setSelected(false);
+            
             rbSim.setUserData(true);
             rbNao.setUserData(false);
         } else {
+            rbSim.setSelected(false);
+            rbNao.setSelected(true);
+            
             rbSim.setUserData(false);
             rbNao.setUserData(true);
         }
@@ -390,10 +420,15 @@ public class TelaCRUDVacinasController implements Initializable {
                 vacinasCadastradas = vacinas.getVacinasCadastradas();
             }
             
+            int indicePosto;
+            
             for (ListaVacinas v : vacinasCadastradas) {
+                indicePosto = postosCadastrados.indexOf(findPosto(v.getNomePosto()));
                 for (Vacina vacina : v.getVacinasPosto()) {
                     listaVacinas.add(new ListaVacinaListView(v.getNomePosto(), 
                                                              vacina));
+                    postosCadastrados.get(indicePosto).getVacinasPosto()
+                                                                   .add(vacina);
                 }
             }
             
@@ -410,7 +445,9 @@ public class TelaCRUDVacinasController implements Initializable {
         String nomePostoAlvo = itemListaVacinas.getNomePosto();
         String nomeVacinaAlvo = tfNomeVacina.getText();
         
-        RemoveVacina removeVacina = new RemoveVacina(nomePostoAlvo, nomeVacinaAlvo);
+        RemoveVacina removeVacina = new RemoveVacina(nomePostoAlvo, 
+                                                     nomeVacinaAlvo,
+                                                     cpf, senha);
         
         try {
             Socket client = new Socket(
@@ -458,6 +495,12 @@ public class TelaCRUDVacinasController implements Initializable {
         
         tfNomeVacina.setText(null);
         tfQuantidade.setText(null);
+        
+        rbSim.setSelected(false);
+        rbNao.setSelected(false);
+        
+        rbSim.setUserData(false);
+        rbNao.setUserData(false);
     }
     
     private Vacina findVacina(String nomePosto, String nomeVacina){

@@ -14,16 +14,11 @@ import java.util.ArrayList;
  * @author a2057387
  */
 public class ListagemDiasVacinacao extends MensagemCRUD {
-    private String cpf, senha;
     private String nomePosto;
     private ArrayList<Dia> diaPosto;
 
-    public ListagemDiasVacinacao(
-        String cpf, String senha, String nomePosto, ArrayList<Dia> diaPosto
-    ) {
+    public ListagemDiasVacinacao(String nomePosto, ArrayList<Dia> diaPosto) {
         super(TipoMensagem.LISTA_DIAS_RESPOSTA);
-        this.cpf = cpf;
-        this.senha = senha;
         this.nomePosto = nomePosto;
         this.diaPosto = diaPosto;
     }
@@ -43,6 +38,4 @@ public class ListagemDiasVacinacao extends MensagemCRUD {
     public void setDiaPosto(ArrayList<Dia> diaPosto) {
         this.diaPosto = diaPosto;
     }
-    
-    
 }

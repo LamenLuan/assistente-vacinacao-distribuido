@@ -10,7 +10,6 @@ import entidades.Agendamento;
 import entidades.Alerta;
 import entidades.Dia;
 import entidades.DiasVacinacao;
-import entidades.ListaDiasListView;
 import entidades.ListaPosto;
 import entidades.ListaSlotsListView;
 import entidades.Mensageiro;
@@ -170,7 +169,7 @@ public class TelaCRUDSlotsController implements Initializable {
     @FXML
     private void onAddSlot(ActionEvent event) {
         String nomePosto = posto.getNomePosto();
-        String data = dia.getDia();
+        String data = dia.getData();
         String slotCadastro = tfSlot.getText();
         int qtdSlotVacinacao = Integer.parseInt(tfQuantidade.getText());
         
@@ -235,18 +234,23 @@ public class TelaCRUDSlotsController implements Initializable {
                 PostoDeSaude p = postosCadastrados.get(i);
                 if(p.getNomePosto().equals(nomePosto)){
                     for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
-                        DiasVacinacao d = p.getDiasVacinacao().get(i);
-                        if(d.getDia().equals(data))
+                        DiasVacinacao d = p.getDiasVacinacao().get(j);
+                        if(d.getData().equals(data)){
                             for (int k = 0; k < d.getSlots().size(); k++) {
                                 Slot s = d.getSlots().get(k);
-                                if(s.getSlotVacinacao().equals(slot.getSlotVacinacao()))
+                                if(s.getSlotVacinacao().equals(
+                                                           slot
+                                                           .getSlotVacinacao()))
                                     postosCadastrados.get(i)
                                                      .getDiasVacinacao()
                                                      .get(j)
                                                      .getSlots()
                                                      .get(k)
-                                                     .setQtdSlotVacinacao(s.getQtdSlotVacinacao());
+                                                     .setQtdSlotVacinacao(
+                                                       s.getQtdSlotVacinacao());
                             }
+                            break;
+                        }
                     }
                 }
             }
@@ -258,9 +262,15 @@ public class TelaCRUDSlotsController implements Initializable {
         
         for (int i = 0; i < listaSlots.size(); i++) {
             ListaSlotsListView ls = listaSlots.get(i);
-            if(ls.getSlot().getSlotVacinacao().equals(slot.getSlotVacinacao()))
-                listaSlots.get(i).setSlot(slot);   
+            if(ls.getSlot().getSlotVacinacao().equals(slot.getSlotVacinacao())
+                    && ls.getData().equals(data)){
+                listaSlots.get(i).setSlot(slot);
+                break;
+            }
         }
+        
+        obsSlots = FXCollections.observableArrayList(listaSlots);
+        lvSlots.setItems(obsSlots);
     }
 
     @FXML
@@ -292,8 +302,8 @@ public class TelaCRUDSlotsController implements Initializable {
                 PostoDeSaude p = postosCadastrados.get(i);
                 if(p.getNomePosto().equals(nomePosto)){
                     for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
-                        DiasVacinacao d = p.getDiasVacinacao().get(i);
-                        if(d.getDia().equals(data))
+                        DiasVacinacao d = p.getDiasVacinacao().get(j);
+                        if(d.getData().equals(data))
                             for (int k = 0; k < d.getSlots().size(); k++) {
                                 Slot s = d.getSlots().get(k);
                                 if(s.getSlotVacinacao().equals(slot.getSlot().getSlotVacinacao()))
@@ -317,11 +327,16 @@ public class TelaCRUDSlotsController implements Initializable {
             if(ls.getSlot().getSlotVacinacao().equals(slot.getSlot().getSlotVacinacao()))
                 listaSlots.remove(i);   
         }
+        
+        obsSlots = FXCollections.observableArrayList(listaSlots);
+        lvSlots.setItems(obsSlots);
     }
 
     @FXML
     private void onSelecionarPosto(MouseEvent event) {
         posto = lvPostosDeSaude.getSelectionModel().getSelectedItem();
+        posto.getDiasVacinacao().removeAll(posto.getDiasVacinacao());
+        listaSlots.removeAll(listaSlots);
         
         ReadDias readDias = new ReadDias(cpf, senha, posto.getNomePosto());
         
@@ -351,22 +366,10 @@ public class TelaCRUDSlotsController implements Initializable {
                 listaDias = dias.getDiaPosto();
             }
             
-            int FLAG = 0;
+            listaDias.forEach(d -> { 
+                posto.getDiasVacinacao().add(new DiasVacinacao(d.getData()));
+            });
             
-            for (Dia d : listaDias) {
-                DiasVacinacao novoDia = new DiasVacinacao(d.getData());
-                
-                for (int i = 0; i < posto.getDiasVacinacao().size(); i++) {
-                    if(posto.getDiasVacinacao().get(i).getDia()
-                            .equals(novoDia.getDia())){
-                        FLAG = 1;
-                        break;
-                    }
-                }
-                
-                if(FLAG == 0)
-                    posto.getDiasVacinacao().add(novoDia);
-            }
             
             MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
             
@@ -392,25 +395,25 @@ public class TelaCRUDSlotsController implements Initializable {
             MensageiroCliente.enviaMensagem(outbound, readSlots);
         
             Gson gson = new Gson();
-            String stringVacinas = MensageiroCliente.recebeMensagem(inbound);
-            ListagemSlots slots = gson.fromJson(stringVacinas, 
+            String stringSlots = MensageiroCliente.recebeMensagem(inbound);
+            ListagemSlots slots = gson.fromJson(stringSlots, 
                                                    ListagemSlots.class);
 
             if(slots.getId()  == TipoMensagem.ERRO.getId() ) {
-                Erro erro = gson.fromJson(stringVacinas, Erro.class);
+                Erro erro = gson.fromJson(stringSlots, Erro.class);
                 Alerta.mostraAlerta( "Erro com o servidor!", erro.getMensagem());
             } else {
 
-                for (DiasVacinacao d : slots.getDiaPosto()) {
+                slots.getDiaPosto().forEach(d -> {
                     for (int i = 0; i < d.getSlots().size(); i++) {
                         ListaSlotsListView item = new ListaSlotsListView(
-                                                        slots.getNomePosto(), 
-                                                        d.getDia(), 
-                                                        d.getSlots().get(i));
+                                slots.getNomePosto(),
+                                d.getData(),
+                                d.getSlots().get(i));
                         
                         listaSlots.add(item);
-                        }
                     }
+                });
                 }
             
             MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
@@ -421,7 +424,6 @@ public class TelaCRUDSlotsController implements Initializable {
         }
         
         obsDias = FXCollections.observableArrayList(posto.getDiasVacinacao());
-        
         lvDiasVacinacao.setItems(obsDias);
         
         obsSlots = FXCollections.observableArrayList(listaSlots);
@@ -442,7 +444,7 @@ public class TelaCRUDSlotsController implements Initializable {
 
     private void saveSlot(String data, Slot slot) {
         for (int i = 0; i < posto.getDiasVacinacao().size(); i++) {
-            if(posto.getDiasVacinacao().get(i).getDia().equals(data)){
+            if(posto.getDiasVacinacao().get(i).getData().equals(data)){
                 posto.getDiasVacinacao().get(i).getSlots().add(slot);
                 break;
             }
@@ -482,5 +484,4 @@ public class TelaCRUDSlotsController implements Initializable {
         }
         return null;
     }
-    
 }

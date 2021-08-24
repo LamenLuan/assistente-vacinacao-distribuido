@@ -14,11 +14,16 @@ import entidades.TipoMensagem;
 public class RemoveVacina extends MensagemCRUD {
     private String nomePostoAlvo;
     private String nomeVacinaAlvo;
+    private String cpf;
+    private String senha;
 
-    public RemoveVacina(String nomePostoAlvo, String nomeVacinaAlvo) {
+    public RemoveVacina(String nomePostoAlvo, String nomeVacinaAlvo, 
+                            String cpf, String senha) {
         super(TipoMensagem.REMOVE_VACINA);
         this.nomePostoAlvo = nomePostoAlvo;
         this.nomeVacinaAlvo = nomeVacinaAlvo;
+        this.cpf = cpf;
+        this.senha = senha;
     }
 
     public String getNomeVacinaAlvo() {
@@ -35,6 +40,22 @@ public class RemoveVacina extends MensagemCRUD {
 
     public void setNomePostoAlvo(String nomePostoAlvo) {
         this.nomePostoAlvo = nomePostoAlvo;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
     
 }

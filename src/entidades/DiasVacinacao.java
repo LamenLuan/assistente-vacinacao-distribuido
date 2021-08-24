@@ -12,20 +12,20 @@ import java.util.ArrayList;
  * @author Gabriel
  */
 public class DiasVacinacao {
-    private String dia;
+    private String data;
     private ArrayList<Slot> slots;
 
     public DiasVacinacao(String dia) {
-        this.dia = dia;
+        this.data = dia;
         this.slots = new ArrayList<>();
     }
 
-    public String getDia() {
-        return dia;
+    public String getData() {
+        return data;
     }
 
-    public void setDia(String dia) {
-        this.dia = dia;
+    public void setData(String data) {
+        this.data = data;
     }
 
     public ArrayList<Slot> getSlots() {
@@ -38,7 +38,7 @@ public class DiasVacinacao {
 
     @Override
     public String toString() {
-        return dia; //To change body of generated methods, choose Tools | Templates.
+        return data; //To change body of generated methods, choose Tools | Templates.
     }
     
     

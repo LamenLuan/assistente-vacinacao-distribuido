@@ -15,12 +15,17 @@ public class UpdateDia extends MensagemCRUD {
     private String nomePostoAlvo;
     private String dataAntiga;
     private String novaData;
+    private String cpf;
+    private String senha;
 
-    public UpdateDia(String nomePostoAlvo, String dataAntiga, String novaData) {
+    public UpdateDia(String nomePostoAlvo, String dataAntiga, String novaData, 
+                        String cpf, String senha) {
         super(TipoMensagem.UPDATE_DIA);
         this.nomePostoAlvo = nomePostoAlvo;
         this.dataAntiga = dataAntiga;
         this.novaData = novaData;
+        this.cpf = cpf;
+        this.senha = senha;
     }
 
     public String getNovaData() {
@@ -46,5 +51,20 @@ public class UpdateDia extends MensagemCRUD {
     public void setDataAntiga(String dataAntiga) {
         this.dataAntiga = dataAntiga;
     }
-    
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 }

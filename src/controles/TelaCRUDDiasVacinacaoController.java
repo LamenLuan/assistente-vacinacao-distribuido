@@ -11,19 +11,15 @@ import entidades.Alerta;
 import entidades.Dia;
 import entidades.DiasVacinacao;
 import entidades.ListaPosto;
-import entidades.ListaVacinaListView;
-import entidades.ListaVacinas;
 import entidades.Mensageiro;
 import entidades.MensageiroCliente;
 import entidades.PostoDeSaude;
 import entidades.TelaLoader;
 import entidades.TipoMensagem;
-import entidades.Vacina;
 import entidades.mensagensCRUD.CadastroDiaVacinacao;
 import entidades.mensagensCRUD.Erro;
 import entidades.mensagensCRUD.ListagemDiasVacinacao;
 import entidades.mensagensCRUD.ListagemPostos;
-import entidades.mensagensCRUD.ListagemVacinas;
 import entidades.mensagensCRUD.PedidoListagemPostos;
 import entidades.mensagensCRUD.ReadDias;
 import entidades.mensagensCRUD.RemoveDia;
@@ -196,10 +192,11 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
     @FXML
     private void onUpdateData(ActionEvent event) {
         String nomePostoAlvo = posto.getNomePosto();
-        String dataAntiga = dia.getDia();
+        String dataAntiga = dia.getData();
         String novaData = dpData.getEditor().getText();
         
-        UpdateDia updateDia = new UpdateDia(nomePostoAlvo, dataAntiga, novaData);
+        UpdateDia updateDia = new UpdateDia(nomePostoAlvo, dataAntiga, novaData,
+                                                cpf, senha);
         
         try {
             Socket client = new Socket(
@@ -230,7 +227,7 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
         
         postosCadastrados.get(indicePosto)
                          .getDiasVacinacao()
-                         .get(indiceDia).setDia(novaData);
+                         .get(indiceDia).setData(novaData);
         
         obsDias = FXCollections.observableArrayList(postosCadastrados
                                                         .get(indicePosto)
@@ -242,7 +239,7 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
     @FXML
     private void onRemoveData(ActionEvent event) {
         String nomePostoAlvo = posto.getNomePosto();
-        String data = dia.getDia();
+        String data = dia.getData();
         
         RemoveDia removeDia = new RemoveDia(cpf, senha, nomePostoAlvo, data);
         
@@ -287,6 +284,7 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
     @FXML
     private void onSelecionarPosto(MouseEvent event) {
         posto = lvPostosDeSaude.getSelectionModel().getSelectedItem();
+        posto.getDiasVacinacao().removeAll(posto.getDiasVacinacao());
         
         ReadDias readDias = new ReadDias( cpf, senha, posto.getNomePosto() );
         
@@ -304,22 +302,21 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
             MensageiroCliente.enviaMensagem(outbound, readDias);
         
             Gson gson = new Gson();
-            String stringVacinas = MensageiroCliente.recebeMensagem(inbound);
-            ListagemDiasVacinacao dias = gson.fromJson(stringVacinas, 
+            String stringDiasVac = MensageiroCliente.recebeMensagem(inbound);
+            ListagemDiasVacinacao dias = gson.fromJson(stringDiasVac, 
                                                    ListagemDiasVacinacao.class);
 
             if(dias.getId()  == TipoMensagem.ERRO.getId() ) {
-                Erro erro = gson.fromJson(stringVacinas, Erro.class);
+                Erro erro = gson.fromJson(stringDiasVac, Erro.class);
                 Alerta.mostraAlerta( "Erro com o servidor!", erro.getMensagem());
             } else {
                 listaDias = dias.getDiaPosto();
             }
             
-            for (Dia d : listaDias) {
-                DiasVacinacao novoDia = new DiasVacinacao(d.getData());
-                if(!posto.getDiasVacinacao().contains(novoDia))
-                    posto.getDiasVacinacao().add(new DiasVacinacao(d.getData()));
-            }
+            listaDias.forEach(d -> { 
+                posto.getDiasVacinacao().add(new DiasVacinacao(d.getData()));
+            });
+            
             
             MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
             
@@ -366,8 +363,8 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
    }
     
     private PostoDeSaude findPosto(String nomePosto){
-        for (PostoDeSaude posto : postosCadastrados) {
-            if(posto.getNomePosto().equals(nomePosto)) return posto;
+        for (PostoDeSaude p : postosCadastrados) {
+            if(p.getNomePosto().equals(nomePosto)) return p;
         }
         return null;
     }
@@ -378,7 +375,7 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
             
             if(p.getNomePosto().equals(nomePosto)){
                 for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
-                    if(p.getDiasVacinacao().get(j).getDia().equals(data)){
+                    if(p.getDiasVacinacao().get(j).getData().equals(data)){
                         return p.getDiasVacinacao().get(j);
                     }
                 }
