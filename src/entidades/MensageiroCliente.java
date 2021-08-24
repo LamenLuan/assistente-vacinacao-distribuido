@@ -18,8 +18,8 @@ import java.net.Socket;
  */
 public class MensageiroCliente {
     
-    public static int porta = 21337;
-    public static String ip = "10.20.50.23";
+    public static int porta = 1234;
+    public static String ip = "192.168.1.3";
     
     public static void enviaMensagem(
         PrintWriter outbound, MensagemCRUD mensagem
