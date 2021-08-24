@@ -15,7 +15,9 @@ public class Mensagem {
     private int id;
     private Boolean agendamento = null, admin = null, segundaDose = null;
     private String cpf = null, senha = null, mensagem = null, data = null,
-        nomePosto = null, endPosto = null, slot = null, vacina = null;
+        nomePosto = null, endPosto = null, slot = null, vacina = null,
+        ipUsuario = null;
+    private Integer portaUsuario = null;
     private Usuario usuario = null;
     private ArrayList<PostoDeSaude> postosSaude = null;
     
@@ -79,6 +81,17 @@ public class Mensagem {
     public Mensagem(ArrayList<PostoDeSaude> dadosAgendamento) {
         this.id = TipoMensagem.TEM_VACINAS.getId();
         this.postosSaude = dadosAgendamento;
+    }
+    
+    // Pedido de abertura de chat
+    public Mensagem(
+        String cpf, String senha, String ipUsuario, int portaUsuario
+    ) {
+        this.id = TipoMensagem.PEDIDO_ABERTURA_CHAT.getId();
+        this.cpf = cpf;
+        this.senha = senha;
+        this.ipUsuario = ipUsuario;
+        this.portaUsuario = portaUsuario;
     }
 
     public int getId() {

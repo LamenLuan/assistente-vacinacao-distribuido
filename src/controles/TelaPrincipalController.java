@@ -225,13 +225,41 @@ public class TelaPrincipalController implements Initializable {
 
     @FXML
     private void onAcessarChat(ActionEvent event) {
-        FXMLLoader loader = TelaLoader.Load(
-            this, root, "/./telas/TelaChat.fxml" ,
-            "Assistente de Vacinação - Chat de Dúvidas"
-        );
-        
-        TelaChatController controller = loader.getController();
-        controller.inicializaDados(admin, cpf, senha, agendamento);
+        try {
+            Socket client = new Socket(
+                InetAddress.getByName(Mensageiro.ip),
+                Mensageiro.porta
+            );
+            PrintWriter outbound = new PrintWriter(
+                client.getOutputStream(), true
+            );
+            BufferedReader inbound = new BufferedReader(
+                new InputStreamReader( client.getInputStream() )
+            );
+            
+            Mensagem mensagem = new Mensagem(
+                cpf, senha, client.getInetAddress().getHostAddress(),
+                client.getPort()
+            );
+            
+            Mensageiro.enviaMensagem(outbound, mensagem, false);
+            mensagem = Mensageiro.recebeMensagem(inbound, false);
+            
+            if( mensagem.getId() == TipoMensagem.DADOS_CHAT_ADMIN.getId() ) {
+                FXMLLoader loader = TelaLoader.Load(
+                    this, root, "/./telas/TelaChat.fxml" ,
+                    "Assistente de Vacinação - Chat de Dúvidas"
+                ); 
+                TelaChatController controller = loader.getController();
+                controller.inicializaDados(admin, cpf, senha, agendamento);
+            }
+
+            Mensageiro.fechaSocketEDutos(client, outbound, inbound);
+            
+        } catch (IOException ex) {
+            System.err.println( "Erro:" + ex.getMessage() );
+            Alerta.mostrarErroComunicacao();
+        }
     }
     
     @FXML

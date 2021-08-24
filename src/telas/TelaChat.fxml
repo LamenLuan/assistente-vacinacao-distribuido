@@ -41,19 +41,19 @@
             <Insets bottom="32.0" />
          </VBox.margin>
       </StackPane>
-      <ListView fx:id="lvConversas" maxHeight="-Infinity" nodeOrientation="LEFT_TO_RIGHT">
+      <ListView fx:id="lvConversas" disable="true" maxHeight="-Infinity" nodeOrientation="LEFT_TO_RIGHT">
          <VBox.margin>
             <Insets bottom="32.0" />
          </VBox.margin>
       </ListView>
       <HBox>
          <children>
-            <TextField fx:id="txConversa" prefHeight="26.0" prefWidth="477.0">
+            <TextField fx:id="txConversa" disable="true" prefHeight="26.0" prefWidth="477.0">
                <HBox.margin>
                   <Insets right="12.0" />
                </HBox.margin>
             </TextField>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onEnviarConversa" text="Enviar" />
+            <Button disable="true" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onEnviarConversa" text="Enviar" />
          </children>
       </HBox>
    </children>
