@@ -222,6 +222,15 @@ public class TelaPrincipalController implements Initializable {
             Alerta.mostrarErroComunicacao();
         }
     }
+    
+    private void abreTelaChat() {
+        FXMLLoader loader = TelaLoader.Load(
+            this, root, "/./telas/TelaChat.fxml" ,
+            "Assistente de Vacinação - Chat de Dúvidas"
+        ); 
+        TelaChatController controller = loader.getController();
+        controller.inicializaDados(admin, cpf, senha, agendamento);
+    }
 
     @FXML
     private void onAcessarChat(ActionEvent event) {
@@ -243,9 +252,8 @@ public class TelaPrincipalController implements Initializable {
             );
             
             Mensageiro.enviaMensagem(outbound, mensagem, false);
-            mensagem = Mensageiro.recebeMensagem(inbound, false);
             
-            if( mensagem.getId() == TipoMensagem.DADOS_CHAT_ADMIN.getId() ) {
+            if(admin) {
                 FXMLLoader loader = TelaLoader.Load(
                     this, root, "/./telas/TelaChat.fxml" ,
                     "Assistente de Vacinação - Chat de Dúvidas"
@@ -253,7 +261,25 @@ public class TelaPrincipalController implements Initializable {
                 TelaChatController controller = loader.getController();
                 controller.inicializaDados(admin, cpf, senha, agendamento);
             }
-
+            else {
+                mensagem = Mensageiro.recebeMensagem(inbound, false);
+                int id = mensagem.getId();
+                
+                if( id == TipoMensagem.DADOS_CHAT_ADMIN.getId() ) {
+                    FXMLLoader loader = TelaLoader.Load(
+                        this, root, "/./telas/TelaChat.fxml" ,
+                        "Assistente de Vacinação - Chat de Dúvidas"
+                    ); 
+                    TelaChatController controller = loader.getController();
+                    controller.inicializaDados(admin, cpf, senha, agendamento);
+                }
+                else if ( id == TipoMensagem.ERRO.getId() ) {
+                    Alerta.mostraAlerta(
+                        "Erro com o servidor!", mensagem.getMensagem()
+                    );
+                }
+            }
+            
             Mensageiro.fechaSocketEDutos(client, outbound, inbound);
             
         } catch (IOException ex) {
