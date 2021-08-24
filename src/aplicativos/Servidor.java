@@ -56,6 +56,8 @@ public class Servidor extends Thread {
     protected Socket client;
     private static ArrayList<Usuario> usuarios;
     private static ArrayList<PostoDeSaude> postos;
+    
+    private static ArrayList<Usuario> adminsLogados;
 
     private Servidor(Socket client) {
         this.client = client;
@@ -88,6 +90,8 @@ public class Servidor extends Thread {
                 recebePedidoAgendamento(gson, string, outbound);
             } else if( id == TipoMensagem.PEDIDO_CANCELAMENTO.getId() ) {
                 recebePedidoCancelamento(gson, string, outbound);
+            } else if( id == TipoMensagem.PEDIDO_ABERTURA_CHAT.getId() ) {
+                recebePedidoAberturaChat(gson, string, outbound);
             } else if( id == TipoMensagem.CADASTRO_NOME_ENDERECO_POSTO.getId() ) {
                 recebePedidoCadastroPostoPt1(gson, string, outbound);
             } else if( id == TipoMensagem.LISTA_POSTOS_NOMES.getId() ) {
@@ -145,6 +149,7 @@ public class Servidor extends Thread {
         addUsuarios();
         postos = new ArrayList<>();
         addPostos();
+        adminsLogados = new ArrayList<>();
         
         try {
             server = new ServerSocket(porta);
@@ -443,6 +448,27 @@ public class Servidor extends Thread {
         }
         
         Mensageiro.enviaMensagem(outbound, mensagem, true);
+    }
+    
+    private void recebePedidoAberturaChat(
+        Gson gson, String string, PrintWriter outbound
+    ) {
+        Mensagem mensagem = gson.fromJson(string, Mensagem.class);
+        Usuario usuario = verificaLogin(mensagem);
+        if(usuario != null) {
+            if( usuario.isAdmin() ) {
+                System.out.println("Admin");
+            }
+            else {
+                System.out.println("Usuário");
+            }
+        }
+        else {
+            mensagem = new Mensagem(
+                TipoMensagem.ERRO,
+                "Dados de validação incorretos ou inexistentes."
+            );
+        }
     }
     
     private void recebePedidoCadastroPostoPt1(

@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 
 /**
@@ -34,6 +35,8 @@ public class TelaChatController implements Initializable {
     private VBox root;
     @FXML
     private TextField txConversa;
+    @FXML
+    private ToggleButton btDisponivel;
 
     public void inicializaDados(
         boolean admin, String cpf, String senha, Agendamento agendamento
@@ -42,6 +45,8 @@ public class TelaChatController implements Initializable {
         this.cpf = cpf;
         this.senha = senha;
         this.agendamento = agendamento;
+        
+        btDisponivel.setVisible(admin);
     }
     
     /**

@@ -205,4 +205,21 @@ public class Mensagem {
     public void setPostosSaude(ArrayList<PostoDeSaude> postosSaude) {
         this.postosSaude = postosSaude;
     }
+
+    public String getIpUsuario() {
+        return ipUsuario;
+    }
+
+    public void setIpUsuario(String ipUsuario) {
+        this.ipUsuario = ipUsuario;
+    }
+
+    public int getPortaUsuario() {
+        return portaUsuario;
+    }
+
+    public void setPortaUsuario(int portaUsuario) {
+        this.portaUsuario = portaUsuario;
+    }
+    
 }
