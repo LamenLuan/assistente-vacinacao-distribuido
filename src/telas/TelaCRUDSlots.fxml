@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="root" prefHeight="585.0" prefWidth="770.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCRUDSlotsController">
+<AnchorPane id="AnchorPane" fx:id="root" prefHeight="585.0" prefWidth="770.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCRUDSlotsController">
    <children>
       <StackPane layoutX="32.0" layoutY="38.0" prefHeight="18.0" prefWidth="600.0">
          <children>

@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCRUDPostosController">
+<AnchorPane id="AnchorPane" fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controles.TelaCRUDPostosController">
    <children>
       <ListView fx:id="lvPostos" layoutX="14.0" layoutY="109.0" onMouseClicked="#onSelecionaPosto" prefHeight="272.0" prefWidth="200.0" />
       <StackPane layoutX="14.0" layoutY="27.0" prefHeight="18.0" prefWidth="600.0">

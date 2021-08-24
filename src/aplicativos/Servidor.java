@@ -126,7 +126,7 @@ public class Servidor extends Thread {
                 );
                 Mensageiro.enviaMensagem(outbound, msg, true);
             }
-        } catch (IOException ex) {
+        } catch (IOException | NullPointerException ex) {
             System.err.println("Erro: " + ex.getMessage() );
         }
     }
