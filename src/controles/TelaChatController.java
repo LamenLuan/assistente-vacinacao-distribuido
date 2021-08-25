@@ -19,6 +19,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,7 +42,7 @@ import javafx.stage.Window;
 public class TelaChatController implements Initializable {
 
     private boolean admin, disponivel;
-    private String cpf, senha;
+    private String cpf, senha, nomeDestinatario;
     private Agendamento agendamento;
     
     private Socket clientListener;
@@ -67,6 +69,7 @@ public class TelaChatController implements Initializable {
         this.cpf = cpf;
         this.senha = senha;
         this.agendamento = agendamento;
+        this.nomeDestinatario = "Destinatário:";
         
         conversas = FXCollections.observableArrayList();
         lvConversas.setItems(conversas);
@@ -126,6 +129,11 @@ public class TelaChatController implements Initializable {
             if( id == TipoMensagem.DADOS_CHAT_ADMIN.getId() ) {
                 chatListener =  new ChatListener(inboundListener, this);
                 chatListener.start();
+                setChatDisable(false);
+                nomeDestinatario = mensagem.getNome();
+                conversas.add(
+                    "Você está conversando com " + nomeDestinatario + " agora!"
+                );
             }
             else if ( id == TipoMensagem.NENHUM_ADMIN_DISPONIVEL.getId() ) {
                 Alerta.mostraAlerta(
@@ -182,7 +190,22 @@ public class TelaChatController implements Initializable {
 
     @FXML
     private void onEnviarConversa(ActionEvent event) {
-        
+        String stringMensagem = txConversa.getText();
+        if( stringMensagem.isEmpty() ) {
+            Alerta.mostrarCamposVazios();
+        }
+        else {
+            Mensagem mensagem = new Mensagem(
+                TipoMensagem.MENSAGEM_CLIENTE, stringMensagem
+            );
+            try {
+                Mensageiro.enviaMensagem(outboundListener, mensagem, false);
+                conversas.add("Você: " + stringMensagem);
+                txConversa.clear();
+            } catch (IOException ex) {
+                Alerta.mostrarErroComunicacao();
+            }
+        }
     }
     
     public void setAdminIndisponivel() {
@@ -215,21 +238,13 @@ public class TelaChatController implements Initializable {
             Mensageiro.enviaMensagem(outboundListener, mensagem, false);
             
             // ACHO QUE O BUG ESTA AQUI
-            if(disponivel) {
+            if(disponivel && chatListener == null) {
                 chatListener = new ChatListener(
                     inboundListener, this
                 );
                 chatListener.start();
             }
-            else {
-                Mensageiro.fechaSocketEDutos(
-                    clientListener, outboundListener, inboundListener
-                );
-                clientListener = null;
-                outboundListener = null;
-                inboundListener = null;
-            }
-
+            
         } catch (IOException ex) {
             Alerta.mostrarErroComunicacao();
         }
@@ -245,6 +260,14 @@ public class TelaChatController implements Initializable {
         return admin;
     }
 
+    public String getNomeDestinatario() {
+        return nomeDestinatario;
+    }
+    
+    public void setNomeDestinatario(String nomeDestinatario) {
+        this.nomeDestinatario = nomeDestinatario;
+    }
+    
     public ObservableList<String> getConversas() {
         return conversas;
     }

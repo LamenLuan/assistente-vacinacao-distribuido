@@ -44,12 +44,9 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  *
  * @author luanl
@@ -498,7 +495,16 @@ public class Servidor extends Thread {
             Mensagem mensagem = Mensageiro.recebeMensagem(inbound, true);
             int id = mensagem.getId();
             
-            if( id == TipoMensagem.ADMIN_DISPONIVEL.getId() ) {
+            if( id == TipoMensagem.MENSAGEM_CLIENTE.getId() ) {
+                mensagem = new Mensagem(
+                    TipoMensagem.DIRECIONA_MSG_CLIENTE,
+                    mensagem.getMensagem()
+                );
+                Mensageiro.enviaMensagem(
+                    admin.getOutboundUser(), mensagem, true
+                );
+            }
+            else if( id == TipoMensagem.ADMIN_DISPONIVEL.getId() ) {
                 admin.setDisponivel(true);
             }
             else if( id == TipoMensagem.ADMIN_INDISPONIVEL.getId() ) {
@@ -508,7 +514,7 @@ public class Servidor extends Thread {
                 // Se admin no meio de um atendimento
                 if( !admin.isDisponivel() ) {
                     mensagem = new Mensagem(
-                        TipoMensagem.AVISO_ENCERRAMENTO_CHAT
+                        TipoMensagem.ENCERRAMENTO_CHAT
                     );
                     Mensageiro.enviaMensagem(
                         admin.getOutboundUser(), mensagem, true
@@ -563,10 +569,18 @@ public class Servidor extends Thread {
         while (atendendo) {
             Mensagem mensagem = Mensageiro.recebeMensagem(inbound, true);
             int id = mensagem.getId();
-            
-            if( id == TipoMensagem.PEDIDO_LOGOUT_CHAT.getId() ) {
+            if( id == TipoMensagem.MENSAGEM_CLIENTE.getId() ) {
+                mensagem = new Mensagem(
+                    TipoMensagem.DIRECIONA_MSG_CLIENTE,
+                    mensagem.getMensagem()
+                );
+                Mensageiro.enviaMensagem(
+                    admin.getOutboundAdm(), mensagem, true
+                );
+            }
+            else if( id == TipoMensagem.PEDIDO_LOGOUT_CHAT.getId() ) {
                 // Aviso para o admin que o chat vai ser encerrado
-                mensagem = new Mensagem(TipoMensagem.AVISO_ENCERRAMENTO_CHAT);
+                mensagem = new Mensagem(TipoMensagem.ENCERRAMENTO_CHAT);
                 Mensageiro.enviaMensagem(
                     admin.getOutboundAdm(), mensagem, true
                 );

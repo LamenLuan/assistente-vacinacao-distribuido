@@ -30,59 +30,75 @@ public class ChatListener extends Thread {
     public void run() {       
         try {
             while (true) {
-                if( telaChatController.isAdmin() ) {
+                if ( telaChatController.isAdmin() ) {
                     while (true) {
                         Mensagem mensagem = Mensageiro.recebeMensagem(
-                            inbound, false
+                                inbound, false
                         );
-                        if(mensagem != null) {
+                        if (mensagem != null) {
                             int id = mensagem.getId();
-
-                            if( id == TipoMensagem.DADOS_CHAT_CLIENTE.getId() ) {
-
-                                // GUARDAR O NOME DO CLIENTE NO CONTROLLER
-
+                            
+                            if (id == TipoMensagem.DADOS_CHAT_CLIENTE.getId()) {
+                                String nomeDestinatario = mensagem.getNome();
                                 Platform.runLater(() -> {
                                     telaChatController.setChatDisable(false);
+                                    telaChatController.setNomeDestinatario(
+                                            nomeDestinatario
+                                    );
                                     telaChatController.getConversas().add(
-                                        "Você está conversando com " +
-                                        mensagem.getNome() + " agora!"
+                                            "Você está conversando com "
+                                            + nomeDestinatario + " agora!"
                                     );
                                     telaChatController.setAdminIndisponivel();
                                 });
                                 break;
                             }
                         }
-
+                        
                     }
                 }
-                Mensagem mensagem = Mensageiro.recebeMensagem(inbound, false);
-                if(mensagem != null) {
-                    int id = mensagem.getId();
-                    if( id == TipoMensagem.AVISO_ENCERRAMENTO_CHAT.getId() ) {
-                        if( telaChatController.isAdmin() ) {
+                while (true) {
+                    Mensagem mensagem = Mensageiro.recebeMensagem(inbound, false);
+                    if (mensagem != null) {
+                        int id = mensagem.getId();
+                        
+                        if (id == TipoMensagem.DIRECIONA_MSG_CLIENTE.getId()) {
                             Platform.runLater(() -> {
-                                Alerta.mostraConfirmacao(
-                                    "Chat encerrado pelo usuario"
+                                String nomeDestinatario
+                                        = telaChatController.getNomeDestinatario();
+                                
+                                telaChatController.getConversas().add(
+                                        nomeDestinatario + ": "
+                                        + mensagem.getMensagem()
                                 );
-                                telaChatController.getConversas().clear();
-                                telaChatController.setChatDisable(true);
                             });
-                        }
-                        else {
-                            Platform.runLater(() -> {
-                                Alerta.mostraConfirmacao(
-                                    "Chat encerrado pelo agente de saúde"
-                                );
-                                try {
-                                    telaChatController.fechaChat();
-                                } catch (IOException ex) {}
-                            });
+                        } else if (id == TipoMensagem.ENCERRAMENTO_CHAT.getId()) {
+                            if ( telaChatController.isAdmin() ) {
+                                Platform.runLater(() -> {
+                                    Alerta.mostraConfirmacao(
+                                            "Chat encerrado pelo usuario"
+                                    );
+                                    telaChatController.getConversas().clear();
+                                    telaChatController.setChatDisable(true);
+                                });
+                                break;
+                            } else {
+                                Platform.runLater(() -> {
+                                    Alerta.mostraConfirmacao(
+                                            "Chat encerrado pelo agente de saúde"
+                                    );
+                                    try {
+                                        telaChatController.fechaChat();
+                                    } catch (IOException ex) {
+                                    }
+                                });
+                            }
                         }
                     }
                 }
             }
-        } catch (IOException ex) {}
+        } catch (IOException ex) {
+        }
     }
     
 }

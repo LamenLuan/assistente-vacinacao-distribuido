@@ -84,7 +84,7 @@ public class Mensagem {
     }
     
     /**
-     * Erro ou sucesso generico
+     * Mensagens de chat ou erro/sucesso generico
      * @param tipoMsg
      * @param mensagem
      */

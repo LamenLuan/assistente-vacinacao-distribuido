@@ -182,8 +182,8 @@ public class TelaCRUDSlotsController implements Initializable {
         
         try {
             Socket client = new Socket(
-                InetAddress.getByName(MensageiroCliente.ip),
-                    MensageiroCliente.porta
+                InetAddress.getByName(Mensageiro.ip),
+                    Mensageiro.porta
             );
             PrintWriter outbound = new PrintWriter(
                 client.getOutputStream(), true
@@ -217,8 +217,8 @@ public class TelaCRUDSlotsController implements Initializable {
         
         try {
             Socket client = new Socket(
-                InetAddress.getByName(MensageiroCliente.ip),
-                    MensageiroCliente.porta
+                InetAddress.getByName(Mensageiro.ip),
+                    Mensageiro.porta
             );
             PrintWriter outbound = new PrintWriter(
                 client.getOutputStream(), true
@@ -285,8 +285,8 @@ public class TelaCRUDSlotsController implements Initializable {
         
         try {
             Socket client = new Socket(
-                InetAddress.getByName(MensageiroCliente.ip),
-                    MensageiroCliente.porta
+                InetAddress.getByName(Mensageiro.ip),
+                    Mensageiro.porta
             );
             PrintWriter outbound = new PrintWriter(
                 client.getOutputStream(), true
@@ -342,8 +342,8 @@ public class TelaCRUDSlotsController implements Initializable {
         
         try {
             Socket client = new Socket(
-                InetAddress.getByName(MensageiroCliente.ip),
-                    MensageiroCliente.porta
+                InetAddress.getByName(Mensageiro.ip),
+                    Mensageiro.porta
             );
             PrintWriter outbound = new PrintWriter(
                 client.getOutputStream(), true
@@ -382,8 +382,8 @@ public class TelaCRUDSlotsController implements Initializable {
         
         try {
             Socket client = new Socket(
-                InetAddress.getByName(MensageiroCliente.ip),
-                    MensageiroCliente.porta
+                InetAddress.getByName(Mensageiro.ip),
+                    Mensageiro.porta
             );
             PrintWriter outbound = new PrintWriter(
                 client.getOutputStream(), true
