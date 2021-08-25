@@ -237,7 +237,6 @@ public class TelaChatController implements Initializable {
 
             Mensageiro.enviaMensagem(outboundListener, mensagem, false);
             
-            // ACHO QUE O BUG ESTA AQUI
             if(disponivel && chatListener == null) {
                 chatListener = new ChatListener(
                     inboundListener, this
@@ -270,5 +269,9 @@ public class TelaChatController implements Initializable {
     
     public ObservableList<String> getConversas() {
         return conversas;
+    }
+    
+    public void setBtDisponivelDisable(boolean value) {
+        btDisponivel.setDisable(value);
     }
 }

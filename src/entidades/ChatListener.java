@@ -16,7 +16,7 @@ import javafx.application.Platform;
  */
 public class ChatListener extends Thread {
     
-    private TelaChatController telaChatController;
+    private final TelaChatController telaChatController;
     private final BufferedReader inbound;
 
     public ChatListener(
@@ -42,6 +42,9 @@ public class ChatListener extends Thread {
                                 String nomeDestinatario = mensagem.getNome();
                                 Platform.runLater(() -> {
                                     telaChatController.setChatDisable(false);
+                                    telaChatController.setBtDisponivelDisable(
+                                        true
+                                    );
                                     telaChatController.setNomeDestinatario(
                                             nomeDestinatario
                                     );
@@ -58,21 +61,24 @@ public class ChatListener extends Thread {
                     }
                 }
                 while (true) {
-                    Mensagem mensagem = Mensageiro.recebeMensagem(inbound, false);
+                    Mensagem mensagem = Mensageiro.recebeMensagem(
+                        inbound, false
+                    );
                     if (mensagem != null) {
                         int id = mensagem.getId();
                         
                         if (id == TipoMensagem.DIRECIONA_MSG_CLIENTE.getId()) {
                             Platform.runLater(() -> {
-                                String nomeDestinatario
-                                        = telaChatController.getNomeDestinatario();
+                                String nome = 
+                                    telaChatController.getNomeDestinatario();
                                 
                                 telaChatController.getConversas().add(
-                                        nomeDestinatario + ": "
-                                        + mensagem.getMensagem()
+                                    nome + ": " + mensagem.getMensagem()
                                 );
                             });
-                        } else if (id == TipoMensagem.ENCERRAMENTO_CHAT.getId()) {
+                        } else if (
+                            id == TipoMensagem.ENCERRAMENTO_CHAT.getId()
+                        ) {
                             if ( telaChatController.isAdmin() ) {
                                 Platform.runLater(() -> {
                                     Alerta.mostraConfirmacao(
@@ -80,12 +86,15 @@ public class ChatListener extends Thread {
                                     );
                                     telaChatController.getConversas().clear();
                                     telaChatController.setChatDisable(true);
+                                    telaChatController.setBtDisponivelDisable(
+                                        false
+                                    );
                                 });
                                 break;
                             } else {
                                 Platform.runLater(() -> {
                                     Alerta.mostraConfirmacao(
-                                            "Chat encerrado pelo agente de saúde"
+                                        "Chat encerrado pelo agente de saúde"
                                     );
                                     try {
                                         telaChatController.fechaChat();
