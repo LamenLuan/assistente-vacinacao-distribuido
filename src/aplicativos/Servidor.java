@@ -6,6 +6,7 @@
 package aplicativos;
 
 import com.google.gson.Gson;
+import entidades.AdministradorAtendente;
 import entidades.Agendamento;
 import entidades.Dia;
 import entidades.DiasVacinacao;
@@ -43,9 +44,12 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author luanl
@@ -57,7 +61,7 @@ public class Servidor extends Thread {
     private static ArrayList<Usuario> usuarios;
     private static ArrayList<PostoDeSaude> postos;
     
-    private static ArrayList<Usuario> adminsLogados;
+    private static ArrayList<AdministradorAtendente> adminsAtendentes;
 
     private Servidor(Socket client) {
         this.client = client;
@@ -91,7 +95,7 @@ public class Servidor extends Thread {
             } else if( id == TipoMensagem.PEDIDO_CANCELAMENTO.getId() ) {
                 recebePedidoCancelamento(gson, string, outbound);
             } else if( id == TipoMensagem.PEDIDO_ABERTURA_CHAT.getId() ) {
-                recebePedidoAberturaChat(gson, string, outbound);
+                recebePedidoChat(gson, string, inbound, outbound);
             } else if( id == TipoMensagem.CADASTRO_NOME_ENDERECO_POSTO.getId() ) {
                 recebePedidoCadastroPostoPt1(gson, string, outbound);
             } else if( id == TipoMensagem.LISTA_POSTOS_NOMES.getId() ) {
@@ -149,7 +153,7 @@ public class Servidor extends Thread {
         addUsuarios();
         postos = new ArrayList<>();
         addPostos();
-        adminsLogados = new ArrayList<>();
+        adminsAtendentes = new ArrayList<>();
         
         try {
             server = new ServerSocket(porta);
@@ -450,17 +454,166 @@ public class Servidor extends Thread {
         Mensageiro.enviaMensagem(outbound, mensagem, true);
     }
     
-    private void recebePedidoAberturaChat(
-        Gson gson, String string, PrintWriter outbound
+    private synchronized AdministradorAtendente saveAdmin(
+        Usuario usuario, BufferedReader inbound, PrintWriter outbound
     ) {
+        
+        AdministradorAtendente admin = new AdministradorAtendente(
+            usuario, client, inbound, outbound
+        );
+        adminsAtendentes.add(admin);
+        
+        return  admin;
+    }
+    
+    private synchronized void removeAdmin(AdministradorAtendente admin) {
+        admin.fechaSocketEDutos();
+        adminsAtendentes.remove(admin);
+    }
+    
+    private synchronized AdministradorAtendente buscaAdmin(Usuario usuario) {
+        for (AdministradorAtendente admin : adminsAtendentes) {
+            if(admin.getUsuario() == usuario) {
+                return admin;
+            }
+        }
+        return null;
+    }
+    
+    private synchronized AdministradorAtendente buscaAdminDisponivel() {
+        for (AdministradorAtendente admin : adminsAtendentes) {
+            if( admin.isDisponivel() ) {
+                return admin;
+            }
+        }
+        return null;
+    }
+    
+    private void loopAtendeAdmin(
+        BufferedReader inbound, AdministradorAtendente admin
+    ) throws IOException {
+        
+        boolean atendendo = true;
+        while (atendendo) {  
+            Mensagem mensagem = Mensageiro.recebeMensagem(inbound, true);
+            int id = mensagem.getId();
+            
+            if( id == TipoMensagem.ADMIN_DISPONIVEL.getId() ) {
+                admin.setDisponivel(true);
+            }
+            else if( id == TipoMensagem.ADMIN_INDISPONIVEL.getId() ) {
+                admin.setDisponivel(false);
+            }
+            else if( id == TipoMensagem.PEDIDO_LOGOUT_CHAT.getId() ) {
+                // Se admin no meio de um atendimento
+                if( !admin.isDisponivel() ) {
+                    mensagem = new Mensagem(
+                        TipoMensagem.AVISO_ENCERRAMENTO_CHAT
+                    );
+                    Mensageiro.enviaMensagem(
+                        admin.getOutboundUser(), mensagem, true
+                    );
+                }
+                removeAdmin(admin);
+                atendendo = false;
+            }
+        }
+    }
+    
+    private void enviaDadosClienteParaAdmin(
+        Usuario usuario, AdministradorAtendente admin
+    ) throws IOException {
+        
+        Mensagem mensagem = new Mensagem(
+            usuario.getNome(), TipoMensagem.DADOS_CHAT_CLIENTE
+        ); 
+
+        Mensageiro.enviaMensagem(
+            admin.getOutboundAdm(), mensagem, true
+        );
+    }
+    
+    private void enviaDadosAdminParaCliente(
+        AdministradorAtendente admin, PrintWriter outbound
+    ) throws IOException {
+        
+        Mensagem mensagem = new Mensagem(
+            admin.getUsuario().getNome(),
+            TipoMensagem.DADOS_CHAT_ADMIN
+        );
+        
+        Mensageiro.enviaMensagem(outbound, mensagem, true);
+    }
+    
+    private synchronized void setClientUsuario(
+        AdministradorAtendente admin, Socket client, BufferedReader inbound,
+        PrintWriter outbound
+    ) {
+        admin.setClientUser(client);
+        admin.setInboundUser(inbound);
+        admin.setOutboundUser(outbound);
+    }
+    
+    private void loopAtendeUsuario(
+        BufferedReader inbound, PrintWriter outbound,
+        AdministradorAtendente admin
+    ) throws IOException {
+        
+        boolean atendendo = true;
+        while (atendendo) {
+            Mensagem mensagem = Mensageiro.recebeMensagem(inbound, true);
+            int id = mensagem.getId();
+            
+            if( id == TipoMensagem.PEDIDO_LOGOUT_CHAT.getId() ) {
+                // Aviso para o admin que o chat vai ser encerrado
+                mensagem = new Mensagem(TipoMensagem.AVISO_ENCERRAMENTO_CHAT);
+                Mensageiro.enviaMensagem(
+                    admin.getOutboundAdm(), mensagem, true
+                );
+                atendendo = false;
+                // Retiro a conexao do usuario do admin
+                setClientUsuario(admin, null, null, null);
+                // Fecho a conexa do usuario
+                Mensageiro.fechaSocketEDutos(client, outbound, inbound);
+            }
+        }
+    }
+    
+    private void recebePedidoChat (
+        Gson gson, String string, BufferedReader inbound, PrintWriter outbound
+    ) throws IOException {
         Mensagem mensagem = gson.fromJson(string, Mensagem.class);
         Usuario usuario = verificaLogin(mensagem);
+        
         if(usuario != null) {
             if( usuario.isAdmin() ) {
-                System.out.println("Admin");
+                AdministradorAtendente admin = buscaAdmin(usuario);
+                if(admin == null) admin = saveAdmin(
+                    usuario, inbound, outbound
+                );
+                loopAtendeAdmin(inbound, admin);
             }
             else {
-                System.out.println("Usuário");
+                AdministradorAtendente admin = buscaAdminDisponivel();
+                if(admin != null) {
+                    admin.setDisponivel(false);
+                    // Guardo a conexao do usuario no admin
+                    setClientUsuario(admin, client, inbound, outbound);
+                    // Avisa ao admin qual usuario ele vai atender
+                    enviaDadosClienteParaAdmin(usuario, admin);
+                    // Avisa o usuario o nome do admin que vai atende-lo
+                    enviaDadosAdminParaCliente(admin, outbound);
+
+                    loopAtendeUsuario(inbound, outbound, admin);
+                }
+                else {
+                    mensagem = new Mensagem(
+                        TipoMensagem.NENHUM_ADMIN_DISPONIVEL
+                    );
+                    try {
+                        Mensageiro.enviaMensagem(outbound, mensagem, true);
+                    } catch (IOException ex) {}
+                }
             }
         }
         else {
@@ -468,6 +621,9 @@ public class Servidor extends Thread {
                 TipoMensagem.ERRO,
                 "Dados de validação incorretos ou inexistentes."
             );
+            try {
+                Mensageiro.enviaMensagem(outbound, mensagem, true);
+            } catch (IOException ex) {}
         }
     }
     

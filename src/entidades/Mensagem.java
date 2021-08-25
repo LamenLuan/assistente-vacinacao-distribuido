@@ -16,30 +16,51 @@ public class Mensagem {
     private Boolean agendamento = null, admin = null, segundaDose = null;
     private String cpf = null, senha = null, mensagem = null, data = null,
         nomePosto = null, endPosto = null, slot = null, vacina = null,
-        ipUsuario = null;
+        ipUsuario = null, nome = null;
     private Integer portaUsuario = null;
     private Usuario usuario = null;
     private ArrayList<PostoDeSaude> postosSaude = null;
     
+    /**
+     * Mensagem sem parametros
+     * @param tipoMsg
+     */
     public Mensagem(TipoMensagem tipoMsg) {
         this.id = tipoMsg.getId();
     }
     
-    // Pedido de login ou Pedido de dados para agendamento
+    /**
+     * Pedido de login ou Pedido de dados para agendamento
+     * @param tipoMensagem
+     * @param cpf
+     * @param senha
+     */
     public Mensagem(TipoMensagem tipoMensagem, String cpf, String senha) {
         this.id = tipoMensagem.getId();
         this.cpf = cpf;
         this.senha = senha;
     }
     
-    // Login aprovado
+    /**
+     * Login aprovado
+     * @param agendamento
+     * @param admin
+     */
     public Mensagem(boolean agendamento, boolean admin) {
         this.id = TipoMensagem.LOGIN_APROVADO.getId();
         this.agendamento = agendamento;
         this.admin = admin;
     }
     
-    // Tem agendamento
+    /**
+     * Tem agendamento
+     * @param nomePosto
+     * @param endPosto
+     * @param data
+     * @param slot
+     * @param vacina
+     * @param segundaDose
+     */
     public Mensagem(
         String nomePosto, String endPosto, String data, String slot,
         String vacina, boolean segundaDose
@@ -53,19 +74,33 @@ public class Mensagem {
         this.segundaDose = segundaDose;
     }
     
-    // Pedido de cadastro
+    /**
+     * Pedido de cadastro
+     * @param usuario
+     */
     public Mensagem(Usuario usuario) {
         this.id = TipoMensagem.PEDIDO_CADASTRO.getId();
         this.usuario = usuario;
     }
     
-    // Erro ou sucesso generico
+    /**
+     * Erro ou sucesso generico
+     * @param tipoMsg
+     * @param mensagem
+     */
     public Mensagem(TipoMensagem tipoMsg, String mensagem) {
         this.id = tipoMsg.getId();
         this.mensagem = mensagem;
     }
     
-    // Pedido agendamento
+    /**
+     * Pedido agendamento
+     * @param cpf
+     * @param senha
+     * @param nomePosto
+     * @param data
+     * @param slot
+     */
     public Mensagem(
         String cpf, String senha, String nomePosto, String data, String slot
     ) {
@@ -77,13 +112,22 @@ public class Mensagem {
         this.slot = slot;
     }
     
-    // Tem vacinas
+    /**
+     * Tem vacinas
+     * @param dadosAgendamento
+     */
     public Mensagem(ArrayList<PostoDeSaude> dadosAgendamento) {
         this.id = TipoMensagem.TEM_VACINAS.getId();
         this.postosSaude = dadosAgendamento;
     }
     
-    // Pedido de abertura de chat
+    /**
+     * Pedido de abertura de chat
+     * @param cpf
+     * @param senha
+     * @param ipUsuario
+     * @param portaUsuario
+     */
     public Mensagem(
         String cpf, String senha, String ipUsuario, int portaUsuario
     ) {
@@ -92,6 +136,27 @@ public class Mensagem {
         this.senha = senha;
         this.ipUsuario = ipUsuario;
         this.portaUsuario = portaUsuario;
+    }
+    
+    /**
+     * Informacao de que cliente o admin vai atender
+     * @param ipUsuario
+     * @param portaUsuario
+     */
+    public Mensagem(String ipUsuario, int portaUsuario) {
+        this.id = TipoMensagem.DADOS_CHAT_CLIENTE.getId();
+        this.ipUsuario = ipUsuario;
+        this.portaUsuario = portaUsuario;
+    }
+    
+    /**
+     * Informacao para de uma ponta para a outra
+     * @param nome
+     * @param tipoMensagem
+     */
+    public Mensagem(String nome, TipoMensagem tipoMensagem) {
+        this.id = tipoMensagem.getId();
+        this.nome = nome;
     }
 
     public int getId() {
@@ -221,5 +286,12 @@ public class Mensagem {
     public void setPortaUsuario(int portaUsuario) {
         this.portaUsuario = portaUsuario;
     }
-    
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 }

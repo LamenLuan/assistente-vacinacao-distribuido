@@ -5,7 +5,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -17,7 +16,7 @@
    <children>
       <StackPane prefHeight="18.0" prefWidth="600.0">
          <children>
-            <ToggleButton fx:id="btDisponivel" mnemonicParsing="false" prefHeight="34.0" prefWidth="89.0" text="Disponível" visible="false" StackPane.alignment="BOTTOM_LEFT" />
+            <Button fx:id="btDisponivel" mnemonicParsing="false" onAction="#onMudaDisponibilidade" prefHeight="31.0" prefWidth="83.0" text="Disponível" visible="false" StackPane.alignment="CENTER_LEFT" />
             <Label text="Chat de Dúvidas">
                <font>
                   <Font size="18.0" />
@@ -55,7 +54,7 @@
                   <Insets right="12.0" />
                </HBox.margin>
             </TextField>
-            <Button disable="true" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onEnviarConversa" text="Enviar" />
+            <Button fx:id="btEnviar" disable="true" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onEnviarConversa" text="Enviar" />
          </children>
       </HBox>
    </children>
