@@ -1012,14 +1012,12 @@ public class Servidor extends Thread {
         
         dias = posto.getDiasVacinacao();
         
-        mensagem = new ListagemSlots(
-            posto.getNomePosto(), dias, nomePosto.getCpf(), nomePosto.getSenha()
-        );
+        mensagem = new ListagemSlots(posto.getNomePosto(), dias);
         
         escreveMensagem(mensagem, gson, outbound);
     }
     
-    public Slot findSlot(DiasVacinacao dia, String periodo){
+    public Slot findSlot(DiasVacinacao dia, String periodo) {
         for (Slot slot : dia.getSlots()) {
             if(slot.getSlotVacinacao().equals(periodo)) return slot;
         }

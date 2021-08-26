@@ -117,7 +117,7 @@ public class TelaCRUDVacinasController implements Initializable {
         rbSim.setSelected(false);
         rbNao.setSelected(false);
         
-        rbSim.setUserData(false);
+        rbSim.setUserData(true);
         rbNao.setUserData(false);
         
         try {
@@ -162,14 +162,8 @@ public class TelaCRUDVacinasController implements Initializable {
         lvPostosDeSaude.setItems(obsPostos);
         lvVacinas.setItems(obsVacinas);
         
-        tfNomeVacina.setText(null);
-        tfQuantidade.setText(null);
-        
-        rbSim.setSelected(false);
-        rbNao.setSelected(false);
-        
-        rbSim.setUserData(false);
-        rbNao.setUserData(false);
+        tfNomeVacina.setText("");
+        tfQuantidade.setText("");
     }
     
     @FXML
@@ -185,126 +179,146 @@ public class TelaCRUDVacinasController implements Initializable {
 
     @FXML
     private void onAddVac(ActionEvent event) {
-        String nomeVacina = tfNomeVacina.getText();
-        int qtdd = Integer.parseInt(tfQuantidade.getText());
-        boolean segundaDose = getToggleData(tgSegundaDose);
-        
-        Vacina vacina = new Vacina(nomeVacina, qtdd, segundaDose);
-        
-        saveVacina(posto, vacina);
-        
-        CadastroVacina cadastraVacina = new CadastroVacina(
-            cpf, senha, posto.getNomePosto(), vacina
-        );
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, cadastraVacina);
+        if(posto != null){
+            if(!tfNomeVacina.getText().isEmpty()
+                    && !tfQuantidade.getText().isEmpty()){
+                String nomeVacina = tfNomeVacina.getText();
+                int qtdd = Integer.parseInt(tfQuantidade.getText());
+                boolean segundaDose = getToggleData(tgSegundaDose);
+
+                Vacina vacina = new Vacina(nomeVacina, qtdd, segundaDose);
+
+                saveVacina(posto, vacina);
+
+                CadastroVacina cadastraVacina = new CadastroVacina(
+                    cpf, senha, posto.getNomePosto(), vacina
+                );
+
+                try {
+                    Socket client = new Socket(
+                        InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                    );
+                    PrintWriter outbound = new PrintWriter(
+                        client.getOutputStream(), true
+                    );
+                    BufferedReader inbound = new BufferedReader(
+                        new InputStreamReader( client.getInputStream() )
+                    );
+                    MensageiroCliente.enviaMensagem(outbound, cadastraVacina);
+
+                    verificaSeOperacaoRealizada(inbound);
+
+                    MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
+
+                } catch (IOException ex) {
+                    System.err.println( "Erro:" + ex.getMessage() );
+                    Alerta.mostrarErroComunicacao();
+                }
+
+                obsPostos = FXCollections.observableArrayList(postosCadastrados);
+                obsVacinas = FXCollections.observableArrayList(listaVacinas);
+
+                lvPostosDeSaude.setItems(obsPostos);
+                lvVacinas.setItems(obsVacinas);
+
+                tfNomeVacina.setText("");
+                tfQuantidade.setText("");
+
+                rbSim.setSelected(false);
+                rbNao.setSelected(false);
+            }
+            else {
+                Alerta.mostraAlerta("Dados não inseridos", "Preencha todos os "
+                        + "campos antes de adicionar uma vacina!");
+            }
             
-            verificaSeOperacaoRealizada(inbound);
-            
-            MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+        } else {
+            Alerta.mostraAlerta("Posto não selecionado", "Selecione um posto "
+                    + "antes de inserir uma vacina!");
         }
-        
-        obsPostos = FXCollections.observableArrayList(postosCadastrados);
-        obsVacinas = FXCollections.observableArrayList(listaVacinas);
-        
-        lvPostosDeSaude.setItems(obsPostos);
-        lvVacinas.setItems(obsVacinas);
-        
-        tfNomeVacina.setText(null);
-        tfQuantidade.setText(null);
-        
-        rbSim.setSelected(false);
-        rbNao.setSelected(false);
-        
-        rbSim.setUserData(false);
-        rbNao.setUserData(false);
     }
 
     @FXML
     private void onUpdateVac(ActionEvent event) {
-        String nomePostoAlvo = itemListaVacinas.getNomePosto();
-        String nomeVacinaAlvo = itemListaVacinas.getVacina().getNomeVacina();
-        Vacina novaVacina = new Vacina(
-            tfNomeVacina.getText(), Integer.parseInt(tfQuantidade.getText()),
-            getToggleData(tgSegundaDose)                          
-        );
-        
-        UpdateVacina updateVacina = new UpdateVacina(nomePostoAlvo, 
-                                                     nomeVacinaAlvo, 
-                                                     novaVacina,
-                                                     cpf, senha);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, updateVacina);
-            
-            verificaSeOperacaoRealizada(inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
-        }
-        
-        PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
-        
-        Vacina vacinaAlvo = findVacina(nomePostoAlvo, nomeVacinaAlvo);
-        
-        int indicePosto = postosCadastrados.indexOf(postoAlvo);
-        int indiceVacina = postosCadastrados
-                            .get(indicePosto)
-                            .getVacinasPosto().indexOf(vacinaAlvo);
-            
-        postosCadastrados.get(indicePosto).getVacinasPosto().set(indiceVacina, 
-                                                 novaVacina);
-        
-        for (int i = 0; i < listaVacinas.size(); i++) {
-            ListaVacinaListView item = listaVacinas.get(i);
-            
-            if(item.getNomePosto().equals(nomePostoAlvo)
-               && item.getVacina().getNomeVacina().equals(nomeVacinaAlvo)){
-                
-                item.setVacina(novaVacina);
-                listaVacinas.set(i, item);
-                break;
+        if(itemListaVacinas != null){
+            if(!tfNomeVacina.getText().isEmpty()
+                    && !tfQuantidade.getText().isEmpty()){
+                String nomePostoAlvo = itemListaVacinas.getNomePosto();
+                String nomeVacinaAlvo = itemListaVacinas.getVacina().getNomeVacina();
+                Vacina novaVacina = new Vacina(
+                    tfNomeVacina.getText(), Integer.parseInt(tfQuantidade.getText()),
+                    getToggleData(tgSegundaDose)                          
+                );
+
+                UpdateVacina updateVacina = new UpdateVacina(nomePostoAlvo, 
+                                                             nomeVacinaAlvo, 
+                                                             novaVacina,
+                                                             cpf, senha);
+
+                try {
+                    Socket client = new Socket(
+                        InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                    );
+                    PrintWriter outbound = new PrintWriter(
+                        client.getOutputStream(), true
+                    );
+                    BufferedReader inbound = new BufferedReader(
+                        new InputStreamReader( client.getInputStream() )
+                    );
+                    MensageiroCliente.enviaMensagem(outbound, updateVacina);
+
+                    verificaSeOperacaoRealizada(inbound);
+
+                } catch (IOException ex) {
+                    System.err.println( "Erro:" + ex.getMessage() );
+                    Alerta.mostrarErroComunicacao();
+                }
+
+                PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
+
+                Vacina vacinaAlvo = findVacina(nomePostoAlvo, nomeVacinaAlvo);
+
+                int indicePosto = postosCadastrados.indexOf(postoAlvo);
+                int indiceVacina = postosCadastrados
+                                    .get(indicePosto)
+                                    .getVacinasPosto().indexOf(vacinaAlvo);
+
+                postosCadastrados.get(indicePosto).getVacinasPosto().set(indiceVacina, 
+                                                         novaVacina);
+
+                for (int i = 0; i < listaVacinas.size(); i++) {
+                    ListaVacinaListView item = listaVacinas.get(i);
+
+                    if(item.getNomePosto().equals(nomePostoAlvo)
+                       && item.getVacina().getNomeVacina().equals(nomeVacinaAlvo)){
+
+                        item.setVacina(novaVacina);
+                        listaVacinas.set(i, item);
+                        break;
+                    }
+                }
+
+                obsPostos = FXCollections.observableArrayList(postosCadastrados);
+                obsVacinas = FXCollections.observableArrayList(listaVacinas);
+
+                lvPostosDeSaude.setItems(obsPostos);
+                lvVacinas.setItems(obsVacinas);
+
+                tfNomeVacina.setText("");
+                tfQuantidade.setText("");
+
+                rbSim.setSelected(false);
+                rbNao.setSelected(false);
+            } else {
+                Alerta.mostraAlerta("Dados não inseridos", "Preencha todos os "
+                        + "campos antes de alterar uma vacina!");
             }
+            
+        } else {
+            Alerta.mostraAlerta("Vacina não selecionada", "Selecione a "
+                    + "vacina a ser alterada!");
         }
         
-        obsPostos = FXCollections.observableArrayList(postosCadastrados);
-        obsVacinas = FXCollections.observableArrayList(listaVacinas);
-        
-        lvPostosDeSaude.setItems(obsPostos);
-        lvVacinas.setItems(obsVacinas);
-        
-        tfNomeVacina.setText(null);
-        tfQuantidade.setText(null);
-        
-        rbSim.setSelected(false);
-        rbNao.setSelected(false);
-        
-        rbSim.setUserData(false);
-        rbNao.setUserData(false);
     }
 
     
@@ -375,19 +389,11 @@ public class TelaCRUDVacinasController implements Initializable {
         tfQuantidade.setText(Integer.toString(itemListaVacinas.getVacina()
                                                               .getQtdVacina()));
         
-        if(itemListaVacinas.getVacina().isHasSegundaDose()){
+        if(itemListaVacinas.getVacina().isHasSegundaDose())
             rbSim.setSelected(true);
-            rbNao.setSelected(false);
-            
-            rbSim.setUserData(true);
-            rbNao.setUserData(false);
-        } else {
-            rbSim.setSelected(false);
+        else 
             rbNao.setSelected(true);
-            
-            rbSim.setUserData(false);
-            rbNao.setUserData(true);
-        }
+        
     }
 
     private void carregaVacinas() {
@@ -442,65 +448,70 @@ public class TelaCRUDVacinasController implements Initializable {
 
     @FXML
     private void onRemoveVac(ActionEvent event) {
-        String nomePostoAlvo = itemListaVacinas.getNomePosto();
-        String nomeVacinaAlvo = tfNomeVacina.getText();
-        
-        RemoveVacina removeVacina = new RemoveVacina(nomePostoAlvo, 
-                                                     nomeVacinaAlvo,
-                                                     cpf, senha);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, removeVacina);
-            
-            verificaSeOperacaoRealizada(inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
-        }
-        
-        PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
-        
-        Vacina vacinaAlvo = findVacina(nomePostoAlvo, nomeVacinaAlvo);
-        
-        int indicePosto = postosCadastrados.indexOf(postoAlvo);
-        
-        postosCadastrados.get(indicePosto).getVacinasPosto().remove(vacinaAlvo);
-        
-        for (int i = 0; i < listaVacinas.size(); i++) {
-            ListaVacinaListView item = listaVacinas.get(i);
-            
-            if(item.getNomePosto().equals(nomePostoAlvo)
-               && item.getVacina().getNomeVacina().equals(nomeVacinaAlvo)){
-                
-                listaVacinas.remove(item);
-                break;
+        if(itemListaVacinas != null){
+            String nomePostoAlvo = itemListaVacinas.getNomePosto();
+            String nomeVacinaAlvo = tfNomeVacina.getText();
+
+            RemoveVacina removeVacina = new RemoveVacina(nomePostoAlvo, 
+                                                         nomeVacinaAlvo,
+                                                         cpf, senha);
+
+            try {
+                Socket client = new Socket(
+                    InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                );
+                PrintWriter outbound = new PrintWriter(
+                    client.getOutputStream(), true
+                );
+                BufferedReader inbound = new BufferedReader(
+                    new InputStreamReader( client.getInputStream() )
+                );
+                MensageiroCliente.enviaMensagem(outbound, removeVacina);
+
+                verificaSeOperacaoRealizada(inbound);
+
+            } catch (IOException ex) {
+                System.err.println( "Erro:" + ex.getMessage() );
+                Alerta.mostrarErroComunicacao();
             }
+
+            PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
+
+            Vacina vacinaAlvo = findVacina(nomePostoAlvo, nomeVacinaAlvo);
+
+            int indicePosto = postosCadastrados.indexOf(postoAlvo);
+
+            postosCadastrados.get(indicePosto).getVacinasPosto().remove(vacinaAlvo);
+
+            for (int i = 0; i < listaVacinas.size(); i++) {
+                ListaVacinaListView item = listaVacinas.get(i);
+
+                if(item.getNomePosto().equals(nomePostoAlvo)
+                   && item.getVacina().getNomeVacina().equals(nomeVacinaAlvo)){
+
+                    listaVacinas.remove(item);
+                    break;
+                }
+            }
+
+            obsPostos = FXCollections.observableArrayList(postosCadastrados);
+            obsVacinas = FXCollections.observableArrayList(listaVacinas);
+
+            lvPostosDeSaude.setItems(obsPostos);
+            lvVacinas.setItems(obsVacinas);
+
+            tfNomeVacina.setText("");
+            tfQuantidade.setText("");
+
+            rbSim.setSelected(false);
+            rbNao.setSelected(false);
+            
+            itemListaVacinas = null;
+        } else {
+            Alerta.mostraAlerta("Vacina não selecionada", "Selecione uma "
+                    + "vacina para ser removida!");
         }
         
-        obsPostos = FXCollections.observableArrayList(postosCadastrados);
-        obsVacinas = FXCollections.observableArrayList(listaVacinas);
-        
-        lvPostosDeSaude.setItems(obsPostos);
-        lvVacinas.setItems(obsVacinas);
-        
-        tfNomeVacina.setText(null);
-        tfQuantidade.setText(null);
-        
-        rbSim.setSelected(false);
-        rbNao.setSelected(false);
-        
-        rbSim.setUserData(false);
-        rbNao.setUserData(false);
     }
     
     private Vacina findVacina(String nomePosto, String nomeVacina){

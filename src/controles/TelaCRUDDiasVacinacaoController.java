@@ -153,132 +153,175 @@ public class TelaCRUDDiasVacinacaoController implements Initializable {
 
     @FXML
     private void onAddData(ActionEvent event) {
-        String nomePosto = posto.getNomePosto();
-        String data = dpData.getEditor().getText();
-        
-        Dia dia = new Dia(data);
-        DiasVacinacao novoDia = new DiasVacinacao(data);
-        
-        CadastroDiaVacinacao cadastroDia = new CadastroDiaVacinacao(
-            cpf, senha, nomePosto, dia
-        );
-        
-        posto = findPosto(nomePosto);
-        
-        saveDia(posto, novoDia);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, cadastroDia);
+        if(posto != null){
+            if(!dpData.getEditor().getText().isEmpty()){
+                String nomePosto = posto.getNomePosto();
+                String data = dpData.getEditor().getText();
+
+                Dia dia = new Dia(data);
+                DiasVacinacao novoDia = new DiasVacinacao(data);
+
+                CadastroDiaVacinacao cadastroDia = new CadastroDiaVacinacao(
+                    cpf, senha, nomePosto, dia
+                );
+
+                posto = findPosto(nomePosto);
+
+                saveDia(posto, novoDia);
+
+                try {
+                    Socket client = new Socket(
+                        InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                    );
+                    PrintWriter outbound = new PrintWriter(
+                        client.getOutputStream(), true
+                    );
+                    BufferedReader inbound = new BufferedReader(
+                        new InputStreamReader( client.getInputStream() )
+                    );
+                    MensageiroCliente.enviaMensagem(outbound, cadastroDia);
+
+                    verificaSeOperacaoRealizada(inbound);
+
+                    MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
+
+                } catch (IOException ex) {
+                    System.err.println( "Erro:" + ex.getMessage() );
+                    Alerta.mostrarErroComunicacao();
+                }
+                
+                dpData.getEditor().setText("");
+                
+                obsDias = FXCollections.observableArrayList();
+                lvDiasVacinacao.setItems(obsDias);
+                
+                posto = null;
+            } else {
+                Alerta.mostraAlerta("Data não selecionada", "Selecione uma "
+                    + "data para ser inserida!");
+            }
             
-            verificaSeOperacaoRealizada(inbound);
-            
-            MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+        } else {
+            Alerta.mostraAlerta("Posto não selecionado", "Selecione um posto"
+                    + " para adicionar uma data!");
         }
+        
     }
 
     @FXML
     private void onUpdateData(ActionEvent event) {
-        String nomePostoAlvo = posto.getNomePosto();
-        String dataAntiga = dia.getData();
-        String novaData = dpData.getEditor().getText();
-        
-        UpdateDia updateDia = new UpdateDia(nomePostoAlvo, dataAntiga, novaData,
-                                                cpf, senha);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, updateDia);
+        if(dia != null){
+            if(!dpData.getEditor().getText().isEmpty()){
+                String nomePostoAlvo = posto.getNomePosto();
+                String dataAntiga = dia.getData();
+                String novaData = dpData.getEditor().getText();
+
+                UpdateDia updateDia = new UpdateDia(nomePostoAlvo, dataAntiga, novaData,
+                                                        cpf, senha);
+
+                try {
+                    Socket client = new Socket(
+                        InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                    );
+                    PrintWriter outbound = new PrintWriter(
+                        client.getOutputStream(), true
+                    );
+                    BufferedReader inbound = new BufferedReader(
+                        new InputStreamReader( client.getInputStream() )
+                    );
+                    MensageiroCliente.enviaMensagem(outbound, updateDia);
+
+                    verificaSeOperacaoRealizada(inbound);
+
+                } catch (IOException ex) {
+                    System.err.println( "Erro:" + ex.getMessage() );
+                    Alerta.mostrarErroComunicacao();
+                }
+
+                int indicePosto = postosCadastrados.indexOf(posto);
+
+                DiasVacinacao diaSearch = findDia(nomePostoAlvo, dataAntiga);
+
+                int indiceDia = postosCadastrados.get(indicePosto)
+                                                    .getDiasVacinacao()
+                                                    .indexOf(diaSearch);
+
+                postosCadastrados.get(indicePosto)
+                                 .getDiasVacinacao()
+                                 .get(indiceDia).setData(novaData);
+
+                obsDias = FXCollections.observableArrayList(postosCadastrados
+                                                                .get(indicePosto)
+                                                                .getDiasVacinacao());
+
+                lvDiasVacinacao.setItems(obsDias);
+                
+                dia = null;
+                posto = null;
+                
+                dpData.getEditor().setText("");
+            } else {
+                Alerta.mostraAlerta("Nova data não selecionada", "Selecione "
+                        + "uma nova data para alterar a antiga!");
+            }
             
-            verificaSeOperacaoRealizada(inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+        } else {
+            Alerta.mostraAlerta("Data não selecionada", "Selecione uma "
+                    + "data para ser alterada!");
         }
-        
-        int indicePosto = postosCadastrados.indexOf(posto);
-        
-        DiasVacinacao diaSearch = findDia(nomePostoAlvo, dataAntiga);
-        
-        int indiceDia = postosCadastrados.get(indicePosto)
-                                            .getDiasVacinacao()
-                                            .indexOf(diaSearch);
-        
-        postosCadastrados.get(indicePosto)
-                         .getDiasVacinacao()
-                         .get(indiceDia).setData(novaData);
-        
-        obsDias = FXCollections.observableArrayList(postosCadastrados
-                                                        .get(indicePosto)
-                                                        .getDiasVacinacao());
-        
-        lvDiasVacinacao.setItems(obsDias);
     }
 
     @FXML
     private void onRemoveData(ActionEvent event) {
-        String nomePostoAlvo = posto.getNomePosto();
-        String data = dia.getData();
-        
-        RemoveDia removeDia = new RemoveDia(cpf, senha, nomePostoAlvo, data);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, removeDia);
+        if(dia != null){
+            String nomePostoAlvo = posto.getNomePosto();
+            String data = dia.getData();
+
+            RemoveDia removeDia = new RemoveDia(cpf, senha, nomePostoAlvo, data);
+
+            try {
+                Socket client = new Socket(
+                    InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                );
+                PrintWriter outbound = new PrintWriter(
+                    client.getOutputStream(), true
+                );
+                BufferedReader inbound = new BufferedReader(
+                    new InputStreamReader( client.getInputStream() )
+                );
+                MensageiroCliente.enviaMensagem(outbound, removeDia);
+
+                verificaSeOperacaoRealizada(inbound);
+
+                MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
+
+            } catch (IOException ex) {
+                System.err.println( "Erro:" + ex.getMessage() );
+                Alerta.mostrarErroComunicacao();
+            }
+
+            PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
+
+            DiasVacinacao diaAlvo = findDia(nomePostoAlvo, data);
+
+            int indicePosto = postosCadastrados.indexOf(postoAlvo);
+
+            postosCadastrados.get(indicePosto).getDiasVacinacao().remove(diaAlvo);
+
+            obsDias = FXCollections.observableArrayList(postosCadastrados
+                                                        .get(indicePosto)
+                                                        .getDiasVacinacao());
+
+            lvDiasVacinacao.setItems(obsDias);
             
-            verificaSeOperacaoRealizada(inbound);
+            dia = null;
             
-            MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+            dpData.getEditor().setText("");
+        } else {
+            Alerta.mostraAlerta("Data não selecionada", "Selecione uma data"
+                    + " a ser removida!");
         }
         
-        PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
-        
-        DiasVacinacao diaAlvo = findDia(nomePostoAlvo, data);
-        
-        int indicePosto = postosCadastrados.indexOf(postoAlvo);
-        int indiceDia = postosCadastrados.get(indicePosto)
-                .getDiasVacinacao().indexOf(diaAlvo);
-        
-        postosCadastrados.get(indicePosto).getDiasVacinacao().remove(diaAlvo);
-        
-        obsDias = FXCollections.observableArrayList(postosCadastrados
-                                                    .get(indicePosto)
-                                                    .getDiasVacinacao());
-        
-        lvDiasVacinacao.setItems(obsDias);
     }
 
     @FXML

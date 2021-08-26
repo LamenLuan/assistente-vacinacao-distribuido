@@ -168,168 +168,204 @@ public class TelaCRUDSlotsController implements Initializable {
 
     @FXML
     private void onAddSlot(ActionEvent event) {
-        String nomePosto = posto.getNomePosto();
-        String data = dia.getData();
-        String slotCadastro = tfSlot.getText();
-        int qtdSlotVacinacao = Integer.parseInt(tfQuantidade.getText());
-        
-        CadastroSlot cadastroSlot = new CadastroSlot(nomePosto, data, 
-                                    slotCadastro, qtdSlotVacinacao, cpf, senha);
-        
-        Slot slot = new Slot(slotCadastro, qtdSlotVacinacao);
-        
-        saveSlot(data, slot);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip),
-                    Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, cadastroSlot);
-            
-            verificaSeOperacaoRealizada(inbound);
-            
-            MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+        if(dia != null){
+            if(!tfSlot.getText().isEmpty()
+                    && !tfQuantidade.getText().isEmpty()){
+                String nomePosto = posto.getNomePosto();
+                String data = dia.getData();
+                String slotCadastro = tfSlot.getText();
+                int qtdSlotVacinacao = Integer.parseInt(tfQuantidade.getText());
+
+                CadastroSlot cadastroSlot = new CadastroSlot(nomePosto, data, 
+                                            slotCadastro, qtdSlotVacinacao, cpf, senha);
+
+                Slot slot = new Slot(slotCadastro, qtdSlotVacinacao);
+
+                saveSlot(data, slot);
+
+                try {
+                    Socket client = new Socket(
+                        InetAddress.getByName(Mensageiro.ip),
+                            Mensageiro.porta
+                    );
+                    PrintWriter outbound = new PrintWriter(
+                        client.getOutputStream(), true
+                    );
+                    BufferedReader inbound = new BufferedReader(
+                        new InputStreamReader( client.getInputStream() )
+                    );
+                    MensageiroCliente.enviaMensagem(outbound, cadastroSlot);
+
+                    verificaSeOperacaoRealizada(inbound);
+
+                    MensageiroCliente.fechaSocketEDutos(client, outbound, inbound);
+                    
+                    tfSlot.setText("");
+                    tfQuantidade.setText("");
+                    
+                    dia = null;
+
+                } catch (IOException ex) {
+                    System.err.println( "Erro:" + ex.getMessage() );
+                    Alerta.mostrarErroComunicacao();
+                }
+            } else {
+                Alerta.mostraAlerta("Dados não inseridos", "Preencha todos os "
+                        + "campos antes de adicionar um slot!");
+            }
+        } else {
+            Alerta.mostraAlerta("Data não selecionada", "Selecione uma "
+                    + "data para inserir um slot!");
         }
+        
     }
 
     @FXML
     private void onUpdateSlot(ActionEvent event) {
         ListaSlotsListView itemSlot = lvSlots.getSelectionModel().getSelectedItem();
-        String nomePosto = itemSlot.getNomePosto();
-        String data = itemSlot.getData();
         
-        itemSlot.getSlot().setQtdSlotVacinacao(Integer.parseInt(tfQuantidade.getText()));
-        
-        Slot slot = itemSlot.getSlot();
-        
-        UpdateSlot updateSlot = new UpdateSlot(nomePosto, data, itemSlot.getSlot(), cpf, senha);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip),
-                    Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, updateSlot);
-            
-            verificaSeOperacaoRealizada(inbound);
-            
-            for (int i = 0; i < postosCadastrados.size(); i++) {
-                PostoDeSaude p = postosCadastrados.get(i);
-                if(p.getNomePosto().equals(nomePosto)){
-                    for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
-                        DiasVacinacao d = p.getDiasVacinacao().get(j);
-                        if(d.getData().equals(data)){
-                            for (int k = 0; k < d.getSlots().size(); k++) {
-                                Slot s = d.getSlots().get(k);
-                                if(s.getSlotVacinacao().equals(
-                                                           slot
-                                                           .getSlotVacinacao()))
-                                    postosCadastrados.get(i)
-                                                     .getDiasVacinacao()
-                                                     .get(j)
-                                                     .getSlots()
-                                                     .get(k)
-                                                     .setQtdSlotVacinacao(
-                                                       s.getQtdSlotVacinacao());
+        if(itemSlot != null){
+            if(!tfSlot.getText().isEmpty()
+                    && !tfQuantidade.getText().isEmpty()){
+                String nomePosto = itemSlot.getNomePosto();
+                String data = itemSlot.getData();
+
+                itemSlot.getSlot().setQtdSlotVacinacao(Integer.parseInt(tfQuantidade.getText()));
+
+                Slot slot = itemSlot.getSlot();
+
+                UpdateSlot updateSlot = new UpdateSlot(nomePosto, data, itemSlot.getSlot(), cpf, senha);
+
+                try {
+                    Socket client = new Socket(
+                        InetAddress.getByName(Mensageiro.ip),
+                            Mensageiro.porta
+                    );
+                    PrintWriter outbound = new PrintWriter(
+                        client.getOutputStream(), true
+                    );
+                    BufferedReader inbound = new BufferedReader(
+                        new InputStreamReader( client.getInputStream() )
+                    );
+                    MensageiroCliente.enviaMensagem(outbound, updateSlot);
+
+                    verificaSeOperacaoRealizada(inbound);
+
+                    for (int i = 0; i < postosCadastrados.size(); i++) {
+                        PostoDeSaude p = postosCadastrados.get(i);
+                        if(p.getNomePosto().equals(nomePosto)){
+                            for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
+                                DiasVacinacao d = p.getDiasVacinacao().get(j);
+                                if(d.getData().equals(data)){
+                                    for (int k = 0; k < d.getSlots().size(); k++) {
+                                        Slot s = d.getSlots().get(k);
+                                        if(s.getSlotVacinacao().equals(
+                                                                   slot
+                                                                   .getSlotVacinacao()))
+                                            postosCadastrados.get(i)
+                                                             .getDiasVacinacao()
+                                                             .get(j)
+                                                             .getSlots()
+                                                             .get(k)
+                                                             .setQtdSlotVacinacao(
+                                                               s.getQtdSlotVacinacao());
+                                    }
+                                    break;
+                                }
                             }
-                            break;
                         }
                     }
+
+                } catch (IOException ex) {
+                    System.err.println( "Erro:" + ex.getMessage() );
+                    Alerta.mostrarErroComunicacao();
                 }
+
+                for (int i = 0; i < listaSlots.size(); i++) {
+                    ListaSlotsListView ls = listaSlots.get(i);
+                    if(ls.getSlot().getSlotVacinacao().equals(slot.getSlotVacinacao())
+                            && ls.getData().equals(data)){
+                        listaSlots.get(i).setSlot(slot);
+                        break;
+                    }
+                }
+
+                obsSlots = FXCollections.observableArrayList(listaSlots);
+                lvSlots.setItems(obsSlots);
+            } else {
+                Alerta.mostraAlerta("Dados não inseridos", "Preencha todos os "
+                        + "campos antes de alterar um slot!");
             }
             
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+        } else {
+            Alerta.mostraAlerta("Slot não selecionado", "Selecione um "
+                    + "slot para ser alterado!");
         }
         
-        for (int i = 0; i < listaSlots.size(); i++) {
-            ListaSlotsListView ls = listaSlots.get(i);
-            if(ls.getSlot().getSlotVacinacao().equals(slot.getSlotVacinacao())
-                    && ls.getData().equals(data)){
-                listaSlots.get(i).setSlot(slot);
-                break;
-            }
-        }
-        
-        obsSlots = FXCollections.observableArrayList(listaSlots);
-        lvSlots.setItems(obsSlots);
     }
 
     @FXML
     private void onRemoveSlot(ActionEvent event) {
         ListaSlotsListView slot = lvSlots.getSelectionModel().getSelectedItem();
         
-        String nomePosto = posto.getNomePosto();
-        String data = slot.getData();
-        String slotVacinacao = slot.getSlot().getSlotVacinacao();
-        
-        RemoveSlot removeSlot = new RemoveSlot(nomePosto, data, slotVacinacao, cpf, senha);
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip),
-                    Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, removeSlot);
-            
-            verificaSeOperacaoRealizada(inbound);
-            
-            for (int i = 0; i < postosCadastrados.size(); i++) {
-                PostoDeSaude p = postosCadastrados.get(i);
-                if(p.getNomePosto().equals(nomePosto)){
-                    for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
-                        DiasVacinacao d = p.getDiasVacinacao().get(j);
-                        if(d.getData().equals(data))
-                            for (int k = 0; k < d.getSlots().size(); k++) {
-                                Slot s = d.getSlots().get(k);
-                                if(s.getSlotVacinacao().equals(slot.getSlot().getSlotVacinacao()))
-                                    postosCadastrados.get(i)
-                                                     .getDiasVacinacao()
-                                                     .get(j)
-                                                     .getSlots()
-                                                     .remove(s);
-                            }
+        if(slot != null){
+            String nomePosto = posto.getNomePosto();
+            String data = slot.getData();
+            String slotVacinacao = slot.getSlot().getSlotVacinacao();
+
+            RemoveSlot removeSlot = new RemoveSlot(nomePosto, data, slotVacinacao, cpf, senha);
+
+            try {
+                Socket client = new Socket(
+                    InetAddress.getByName(Mensageiro.ip),
+                        Mensageiro.porta
+                );
+                PrintWriter outbound = new PrintWriter(
+                    client.getOutputStream(), true
+                );
+                BufferedReader inbound = new BufferedReader(
+                    new InputStreamReader( client.getInputStream() )
+                );
+                MensageiroCliente.enviaMensagem(outbound, removeSlot);
+
+                verificaSeOperacaoRealizada(inbound);
+
+                for (int i = 0; i < postosCadastrados.size(); i++) {
+                    PostoDeSaude p = postosCadastrados.get(i);
+                    if(p.getNomePosto().equals(nomePosto)){
+                        for (int j = 0; j < p.getDiasVacinacao().size(); j++) {
+                            DiasVacinacao d = p.getDiasVacinacao().get(j);
+                            if(d.getData().equals(data))
+                                for (int k = 0; k < d.getSlots().size(); k++) {
+                                    Slot s = d.getSlots().get(k);
+                                    if(s.getSlotVacinacao().equals(slot.getSlot().getSlotVacinacao()))
+                                        postosCadastrados.get(i)
+                                                         .getDiasVacinacao()
+                                                         .get(j)
+                                                         .getSlots()
+                                                         .remove(s);
+                                }
+                        }
                     }
                 }
+
+            } catch (IOException ex) {
+                System.err.println( "Erro:" + ex.getMessage() );
+                Alerta.mostrarErroComunicacao();
             }
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+
+            for (int i = 0; i < listaSlots.size(); i++) {
+                ListaSlotsListView ls = listaSlots.get(i);
+                if(ls.getSlot().getSlotVacinacao().equals(slot.getSlot().getSlotVacinacao()))
+                    listaSlots.remove(i);   
+            }
+
+            obsSlots = FXCollections.observableArrayList(listaSlots);
+            lvSlots.setItems(obsSlots);
+        } else {
+            Alerta.mostraAlerta("Slot não selecionado", "Selecione um "
+                    + "slot para ser removido!");
         }
-        
-        for (int i = 0; i < listaSlots.size(); i++) {
-            ListaSlotsListView ls = listaSlots.get(i);
-            if(ls.getSlot().getSlotVacinacao().equals(slot.getSlot().getSlotVacinacao()))
-                listaSlots.remove(i);   
-        }
-        
-        obsSlots = FXCollections.observableArrayList(listaSlots);
-        lvSlots.setItems(obsSlots);
     }
 
     @FXML

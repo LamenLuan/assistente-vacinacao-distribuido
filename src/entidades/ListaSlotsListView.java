@@ -47,8 +47,7 @@ public class ListaSlotsListView {
     @Override
     public String toString() {
         return "Nome do Posto: " + nomePosto + " || Data: " + data + " Slot: "
-                + slot.toString();
+                + slot.getSlotVacinacao() + " Quantidade de vacinas "
+                + "disponíveis: " + slot.getQtdSlotVacinacao();
     }
-    
-    
 }

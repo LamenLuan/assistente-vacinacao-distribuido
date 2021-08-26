@@ -138,38 +138,45 @@ public class TelaCRUDPostosController implements Initializable {
 
     @FXML
     private void onAddPosto(ActionEvent event) {
-        String nomePosto = tfNomePosto.getText();
-        String enderecoPosto = tfEnderecoPosto.getText();
-        
-        CadastroPostoPt1 cadastroPosto = new CadastroPostoPt1(
-            cpf, senha, nomePosto, enderecoPosto
-        );
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+        if(!tfNomePosto.getText().isEmpty() 
+                && !tfEnderecoPosto.getText().isEmpty()){
+            String nomePosto = tfNomePosto.getText();
+            String enderecoPosto = tfEnderecoPosto.getText();
+
+            CadastroPostoPt1 cadastroPosto = new CadastroPostoPt1(
+                cpf, senha, nomePosto, enderecoPosto
             );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, cadastroPosto);
-            
-            if( verificaSeOperacaoRealizada(inbound) ) {
-                PostoDeSaude posto = new PostoDeSaude(nomePosto, enderecoPosto);
-                postosCadastrados.add(posto);
-                obsPostos = FXCollections.observableArrayList(postosCadastrados);
-                lvPostos.setItems(obsPostos);
-                tfNomePosto.setText(null);
-                tfEnderecoPosto.setText(null);
+
+            try {
+                Socket client = new Socket(
+                    InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                );
+                PrintWriter outbound = new PrintWriter(
+                    client.getOutputStream(), true
+                );
+                BufferedReader inbound = new BufferedReader(
+                    new InputStreamReader( client.getInputStream() )
+                );
+                MensageiroCliente.enviaMensagem(outbound, cadastroPosto);
+
+                if( verificaSeOperacaoRealizada(inbound) ) {
+                    PostoDeSaude posto = new PostoDeSaude(nomePosto, enderecoPosto);
+                    postosCadastrados.add(posto);
+                    obsPostos = FXCollections.observableArrayList(postosCadastrados);
+                    lvPostos.setItems(obsPostos);
+                    tfNomePosto.setText("");
+                    tfEnderecoPosto.setText("");
+                }
+
+            } catch (IOException ex) {
+                System.err.println( "Erro:" + ex.getMessage() );
+                Alerta.mostrarErroComunicacao();
             }
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+        } else {
+            Alerta.mostraAlerta("Dados não inseridos", "Preencha todos os "
+                        + "campos antes de adicionar um posto!");
         }
+        
     }
     
     private boolean verificaSeOperacaoRealizada(BufferedReader inbound)
@@ -193,96 +200,114 @@ public class TelaCRUDPostosController implements Initializable {
 
     @FXML
     private void onUpdatePosto(ActionEvent event) {
-        String nomePostoAlvo = lvPostos
+        if(lvPostos.getSelectionModel().getSelectedItem() != null){
+            if(!tfNomePosto.getText().isBlank() 
+                    && !tfEnderecoPosto.getText().isBlank()){
+                String nomePostoAlvo = lvPostos
                 .getSelectionModel()
                 .getSelectedItem()
                 .getNomePosto();
-        String nomePosto = tfNomePosto.getText();
-        String enderecoPosto = tfEnderecoPosto.getText();
-        
-        PedidoUpdatePosto updatePosto = new PedidoUpdatePosto(
-            cpf, senha, nomePostoAlvo, nomePosto, enderecoPosto
-        );
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
-            );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, updatePosto);
-            
-            verificaSeOperacaoRealizada(inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+                String nomePosto = tfNomePosto.getText();
+                String enderecoPosto = tfEnderecoPosto.getText();
+
+                PedidoUpdatePosto updatePosto = new PedidoUpdatePosto(
+                    cpf, senha, nomePostoAlvo, nomePosto, enderecoPosto
+                );
+
+                try {
+                    Socket client = new Socket(
+                        InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                    );
+                    PrintWriter outbound = new PrintWriter(
+                        client.getOutputStream(), true
+                    );
+                    BufferedReader inbound = new BufferedReader(
+                        new InputStreamReader( client.getInputStream() )
+                    );
+                    MensageiroCliente.enviaMensagem(outbound, updatePosto);
+
+                    verificaSeOperacaoRealizada(inbound);
+
+                } catch (IOException ex) {
+                    System.err.println( "Erro:" + ex.getMessage() );
+                    Alerta.mostrarErroComunicacao();
+                }
+
+                PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
+
+                if(postoAlvo != null){
+                    int indice = postosCadastrados.indexOf(postoAlvo);
+                    postoAlvo.setNomePosto(nomePosto);
+                    postoAlvo.setEndPosto(enderecoPosto);
+
+                    postosCadastrados.set(indice, postoAlvo);
+                }
+
+                obsPostos = FXCollections.observableArrayList(postosCadastrados);
+
+                lvPostos.setItems(obsPostos);
+
+                tfNomePosto.setText("");
+                tfEnderecoPosto.setText("");
+            } else {
+                Alerta.mostraAlerta("Dados não inseridos", "Todos os campos são"
+                        + " obrigatórios para alterar o posto!");
+            }
+        } else {
+            Alerta.mostraAlerta("Posto não selecionado", "Selecione um posto "
+                        + "para alterar!");
         }
         
-        PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
-        
-        if(postoAlvo != null){
-            int indice = postosCadastrados.indexOf(postoAlvo);
-            postoAlvo.setNomePosto(nomePosto);
-            postoAlvo.setEndPosto(enderecoPosto);
-            
-            postosCadastrados.set(indice, postoAlvo);
-        }
-        
-        obsPostos = FXCollections.observableArrayList(postosCadastrados);
-        
-        lvPostos.setItems(obsPostos);
-        
-        tfNomePosto.setText(null);
-        tfEnderecoPosto.setText(null);
     }
 
     @FXML
     private void onRemovePosto(ActionEvent event) {
-        String nomePostoAlvo = lvPostos
+        if(lvPostos.getSelectionModel().getSelectedItem() != null){
+            String nomePostoAlvo = lvPostos
                 .getSelectionModel()
                 .getSelectedItem()
                 .getNomePosto();
         
-        PedidoRemovePosto removePosto = new PedidoRemovePosto(
-            cpf, senha, nomePostoAlvo
-        );
-        
-        try {
-            Socket client = new Socket(
-                InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+            PedidoRemovePosto removePosto = new PedidoRemovePosto(
+                cpf, senha, nomePostoAlvo
             );
-            PrintWriter outbound = new PrintWriter(
-                client.getOutputStream(), true
-            );
-            BufferedReader inbound = new BufferedReader(
-                new InputStreamReader( client.getInputStream() )
-            );
-            MensageiroCliente.enviaMensagem(outbound, removePosto);
-            
-            verificaSeOperacaoRealizada(inbound);
-            
-        } catch (IOException ex) {
-            System.err.println( "Erro:" + ex.getMessage() );
-            Alerta.mostrarErroComunicacao();
+
+            try {
+                Socket client = new Socket(
+                    InetAddress.getByName(Mensageiro.ip), Mensageiro.porta
+                );
+                PrintWriter outbound = new PrintWriter(
+                    client.getOutputStream(), true
+                );
+                BufferedReader inbound = new BufferedReader(
+                    new InputStreamReader( client.getInputStream() )
+                );
+                MensageiroCliente.enviaMensagem(outbound, removePosto);
+
+                verificaSeOperacaoRealizada(inbound);
+
+            } catch (IOException ex) {
+                System.err.println( "Erro:" + ex.getMessage() );
+                Alerta.mostrarErroComunicacao();
+            }
+
+            PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
+
+            if(postoAlvo != null){
+                postosCadastrados.remove(postoAlvo);
+            }
+
+            obsPostos = FXCollections.observableArrayList(postosCadastrados);
+
+            lvPostos.setItems(obsPostos);
+
+            tfNomePosto.setText("");
+            tfEnderecoPosto.setText("");
+        } else {
+            Alerta.mostraAlerta("Posto não selecionado", "Selecione um posto "
+                    + "antes de remover!");
         }
         
-        PostoDeSaude postoAlvo = findPosto(nomePostoAlvo);
-        
-        if(postoAlvo != null){
-            postosCadastrados.remove(postoAlvo);
-        }
-        
-        obsPostos = FXCollections.observableArrayList(postosCadastrados);
-        
-        lvPostos.setItems(obsPostos);
-        
-        tfNomePosto.setText(null);
-        tfEnderecoPosto.setText(null);
     }
 
     @FXML

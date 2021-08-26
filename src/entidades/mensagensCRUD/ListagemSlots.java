@@ -14,17 +14,13 @@ import java.util.ArrayList;
  * @author a2057387
  */
 public class ListagemSlots extends MensagemCRUD {
-    String cpf, senha;
     private String nomePosto;
     private ArrayList<DiasVacinacao> diaPosto;
 
-    public ListagemSlots(String nomePosto, ArrayList<DiasVacinacao> diaPosto,
-                            String cpf, String senha) {
+    public ListagemSlots(String nomePosto, ArrayList<DiasVacinacao> diaPosto) {
         super(TipoMensagem.LISTA_SLOTS_RESPOSTA);
         this.nomePosto = nomePosto;
         this.diaPosto = diaPosto;
-        this.cpf = cpf;
-        this.senha = senha;
     }
 
     public ArrayList<DiasVacinacao> getDiaPosto() {
@@ -42,6 +38,4 @@ public class ListagemSlots extends MensagemCRUD {
     public void setNomePosto(String nomePosto) {
         this.nomePosto = nomePosto;
     }
-    
-    
 }
