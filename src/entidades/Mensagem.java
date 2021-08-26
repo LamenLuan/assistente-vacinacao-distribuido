@@ -100,9 +100,11 @@ public class Mensagem {
      * @param nomePosto
      * @param data
      * @param slot
+     * @param vacina
      */
     public Mensagem(
-        String cpf, String senha, String nomePosto, String data, String slot
+        String cpf, String senha, String nomePosto, String data, String slot,
+        String vacina
     ) {
         this.id = TipoMensagem.PEDIDO_AGENDAMENTO.getId();
         this.cpf = cpf;
@@ -110,6 +112,7 @@ public class Mensagem {
         this.nomePosto = nomePosto;
         this.data = data;
         this.slot = slot;
+        this.vacina = vacina;
     }
     
     /**

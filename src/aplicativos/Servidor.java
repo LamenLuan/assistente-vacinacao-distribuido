@@ -131,9 +131,7 @@ public class Servidor extends Thread {
                 );
                 Mensageiro.enviaMensagem(outbound, msg, true);
             }
-        } catch (IOException | NullPointerException ex) {
-            System.err.println("Erro: " + ex.getMessage() );
-        }
+        } catch (IOException | NullPointerException ex) {}
     }
 
     /**
@@ -386,7 +384,7 @@ public class Servidor extends Thread {
             usuario.setAgendamento(
                 new Agendamento(
                     mensagem.getNomePosto(), endereco, mensagem.getData(),
-                    mensagem.getSlot(), null, false
+                    mensagem.getSlot(), "", false
                 )
             );
             
