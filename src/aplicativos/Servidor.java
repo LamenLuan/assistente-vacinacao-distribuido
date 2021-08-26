@@ -47,6 +47,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 /**
  *
  * @author luanl
@@ -140,9 +141,9 @@ public class Servidor extends Thread {
     public static void main(String[] args) {
         ServerSocket server = null;
      
-//        Scanner scanner = new Scanner(System.in);
-//        System.out.println("Porta:");
-//        porta = scanner.nextInt();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Porta:");
+        porta = scanner.nextInt();
         
         usuarios = new ArrayList<>();
         addUsuarios();

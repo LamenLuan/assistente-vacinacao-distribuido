@@ -34,11 +34,11 @@ public class Cliente extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        Scanner scanner = new Scanner(System.in);
-//        System.out.println("IP:");
-//        MensageiroCliente.ip = scanner.nextLine();
-//        System.out.println("Porta:");
-//        MensageiroCliente.porta = scanner.nextInt();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("IP:");
+        Mensageiro.ip = scanner.nextLine();
+        System.out.println("Porta:");
+        Mensageiro.porta = scanner.nextInt();
         
         launch(args);
     }
